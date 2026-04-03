@@ -1,0 +1,17 @@
+.env
+
+# Stale duplicate after flattening layout (safe to delete locally)
+master-foundation/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Local upload blobs (metadata is in Postgres)
+backend/data/uploads/*
+!backend/data/uploads/.gitkeep
