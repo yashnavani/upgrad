@@ -18,6 +18,11 @@ class RegisterRequest(BaseModel):
     full_name: str | None = None
 
 
+class GoogleTokenRequest(BaseModel):
+    email: EmailStr
+    google_id: str
+
+
 @router.post("/register", summary="Create account (native credentials)")
 async def register(data: RegisterRequest, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User).where(User.email == data.email))
@@ -66,6 +71,42 @@ async def login(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Account disabled.",
         )
+
+    access_token = create_access_token(
+        subject=str(user.id),
+        email=user.email,
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
+@router.post("/google-token", summary="Get JWT token for Google OAuth user")
+async def google_token(
+    data: GoogleTokenRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Generate a backend JWT token for a user authenticated via Google OAuth.
+    The user must already exist in the database (created during sign-in callback).
+    """
+    result = await db.execute(select(User).where(User.email == data.email))
+    user = result.scalar_one_or_none()
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found. Please register first.",
+        )
+
+    if not user.is_active or user.is_deleted:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Account disabled.",
+        )
+
+    # Optionally store google_id in supabase_id field for tracking
+    if not user.supabase_id:
+        user.supabase_id = data.google_id
+        await db.commit()
 
     access_token = create_access_token(
         subject=str(user.id),

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-secondary": "#ffffff",
+            "on-error-container": "#93000a",
+            "on-surface": "#191c1e",
+            "surface": "#f7f9fb",
+            "on-secondary-container": "#494b83",
+            "inverse-primary": "#c0c1ff",
+            "tertiary-fixed-dim": "#ffb783",
+            "outline-variant": "#c7c4d7",
+            "primary-container": "#6063ee",
+            "primary": "#4648d4",
+            "surface-dim": "#d8dadc",
+            "secondary-container": "#bdbefe",
+            "secondary-fixed-dim": "#c0c1ff",
+            "inverse-surface": "#2d3133",
+            "secondary": "#575992",
+            "on-tertiary": "#ffffff",
+            "on-tertiary-fixed": "#301400",
+            "on-secondary-fixed-variant": "#404178",
+            "on-tertiary-fixed-variant": "#703700",
+            "surface-container-highest": "#e0e3e5",
+            "on-primary-fixed": "#07006c",
+            "tertiary": "#904900",
+            "surface-container-high": "#e6e8ea",
+            "on-tertiary-container": "#fffbff",
+            "background": "#f7f9fb",
+            "error-container": "#ffdad6",
+            "primary-fixed": "#e1e0ff",
+            "error": "#ba1a1a",
+            "outline": "#767586",
+            "on-error": "#ffffff",
+            "surface-variant": "#e0e3e5",
+            "surface-container": "#eceef0",
+            "surface-container-lowest": "#ffffff",
+            "secondary-fixed": "#e1e0ff",
+            "on-primary-container": "#fffbff",
+            "on-secondary-fixed": "#13144a",
+            "surface-container-low": "#f2f4f6",
+            "inverse-on-surface": "#eff1f3",
+            "tertiary-container": "#b55d00",
+            "on-primary": "#ffffff",
+            "on-surface-variant": "#464554",
+            "primary-fixed-dim": "#c0c1ff",
+            "on-primary-fixed-variant": "#2f2ebe",
+            "tertiary-fixed": "#ffdcc5",
+            "surface-bright": "#f7f9fb",
+            "on-background": "#191c1e",
+            "surface-tint": "#494bd6"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "fontFamily": {
+            "headline": ["Inter"],
+            "body": ["Inter"],
+            "label": ["Inter"],
+            "mono": ["JetBrains Mono"]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .ghost-border {
+      outline: 1px solid rgba(199, 196, 215, 0.1);
+    }
+    .radial-bg {
+      background: radial-gradient(circle at 50% 50%, #ffffff 0%, #f7f9fb 100%);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- SideNavBar Anchor -->
+<aside class="h-screen w-64 fixed left-0 top-0 z-50 bg-slate-50 dark:bg-slate-950 flex flex-col py-8 gap-y-6">
+<div class="px-8 mb-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-sm" style="font-variation-settings: 'FILL' 1;">dataset</span>
+</div>
+<div>
+<h1 class="text-lg font-black text-indigo-600 dark:text-indigo-400 font-headline">Luminous</h1>
+<p class="text-[10px] uppercase tracking-widest text-slate-500">Enterprise Curator</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-4 px-4 py-3 text-slate-500 dark:text-slate-400 font-['Inter'] text-sm tracking-wide hover:text-indigo-500 dark:hover:text-indigo-300 hover:translate-x-1 duration-300 transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+        Dashboard
+      </a>
+<a class="flex items-center gap-4 px-4 py-3 text-indigo-600 dark:text-indigo-400 font-bold border-r-2 border-indigo-600 font-['Inter'] text-sm tracking-wide opacity-80 transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+        Analytics
+      </a>
+<a class="flex items-center gap-4 px-4 py-3 text-slate-500 dark:text-slate-400 font-['Inter'] text-sm tracking-wide hover:text-indigo-500 dark:hover:text-indigo-300 hover:translate-x-1 duration-300 transition-all" href="#">
+<span class="material-symbols-outlined">folder_open</span>
+        Projects
+      </a>
+<a class="flex items-center gap-4 px-4 py-3 text-slate-500 dark:text-slate-400 font-['Inter'] text-sm tracking-wide hover:text-indigo-500 dark:hover:text-indigo-300 hover:translate-x-1 duration-300 transition-all" href="#">
+<span class="material-symbols-outlined">group</span>
+        Team
+      </a>
+<a class="flex items-center gap-4 px-4 py-3 text-slate-500 dark:text-slate-400 font-['Inter'] text-sm tracking-wide hover:text-indigo-500 dark:hover:text-indigo-300 hover:translate-x-1 duration-300 transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+        Settings
+      </a>
+</nav>
+</aside>
+<main class="ml-64 min-h-screen radial-bg">
+<!-- TopNavBar Anchor -->
+<header class="sticky top-0 w-full z-40 bg-white/10 backdrop-blur-2xl shadow-[0px_4px_12px_rgba(25,28,30,0.04)] flex justify-between items-center px-8 h-16 w-full">
+<div class="flex items-center gap-8">
+<h2 class="text-xl font-bold tracking-tighter text-indigo-600 font-['Inter']">Analytics Center</h2>
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-1 focus:ring-primary" placeholder="Filter metrics..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-slate-100/50 transition-colors">
+<span class="material-symbols-outlined text-slate-500">notifications</span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-slate-200">
+<img alt="User avatar" class="w-8 h-8 rounded-full object-cover" data-alt="Close-up portrait of a professional man in a bright, modern office with soft natural lighting and a neutral background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCsDkJlqY7fMiH-u2FfPHzboeMZKtCmdZnkEOpmnhZ59G6d9C9qEBGg5hf59kKYO94GGVD4qX-XCAxl7njgYow8wvQdhFirJTpgko7KSE-iaJLuYTAvDKRLUvJWNrTqierSOQLHVCKQ78AffT3cxFQe740EbZDx75Up3_RmNE21ZY5ftev6EAnsCcOXgfhIjlFCbvs1Q5p4C2vGu7MYMhXatEcIjg03PDk7OHVBu3sOcy_GwSVGTZiiBIbp0OxB6p7QaeYGDKXDXJr"/>
+</div>
+</div>
+</header>
+<div class="p-8 max-w-7xl mx-auto space-y-8">
+<!-- Hero Header Section -->
+<section class="flex flex-col md:flex-row justify-between items-end gap-6 mb-12">
+<div class="space-y-2">
+<span class="text-[0.6875rem] font-bold tracking-[0.1em] text-primary uppercase">Core Infrastructure</span>
+<h3 class="text-5xl font-black tracking-tight text-on-surface leading-[1.1]">System Diagnostics</h3>
+</div>
+<div class="flex gap-3">
+<div class="glass-panel ghost-border px-6 py-3 rounded-xl flex items-center gap-4">
+<div class="flex flex-col">
+<span class="text-[10px] font-mono text-slate-500 uppercase tracking-tighter">Uptime</span>
+<span class="font-mono text-lg font-bold text-on-surface">99.982%</span>
+</div>
+<div class="w-[1px] h-8 bg-outline-variant/20"></div>
+<div class="flex flex-col">
+<span class="text-[10px] font-mono text-slate-500 uppercase tracking-tighter">Latency</span>
+<span class="font-mono text-lg font-bold text-primary">12ms</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Bento Grid Charts -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Main Performance Chart -->
+<div class="col-span-12 lg:col-span-8 glass-panel ghost-border rounded-xl p-8 shadow-sm">
+<div class="flex justify-between items-start mb-10">
+<div>
+<h4 class="text-lg font-bold text-on-surface mb-1">System Performance</h4>
+<p class="text-sm text-on-surface-variant">Throughput velocity across global nodes</p>
+</div>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">LIVE</span>
+</div>
+</div>
+<!-- Abstract Visualization of Velocity -->
+<div class="relative h-64 flex items-end justify-between gap-1 overflow-hidden px-2">
+<!-- Simulated Waveform Path -->
+<svg class="absolute inset-0 w-full h-full" preserveaspectratio="none">
+<path d="M0,150 Q100,80 200,160 T400,120 T600,140 T800,90 T1000,130" fill="none" stroke="url(#grad-primary)" stroke-linecap="round" stroke-width="4"></path>
+<defs>
+<lineargradient id="grad-primary" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" style="stop-color:#4648d4;stop-opacity:0.2"></stop>
+<stop offset="50%" style="stop-color:#4648d4;stop-opacity:1"></stop>
+<stop offset="100%" style="stop-color:#6063ee;stop-opacity:0.5"></stop>
+</lineargradient>
+</defs>
+</svg>
+<!-- Monospace Axis Labels -->
+<div class="absolute bottom-0 left-0 right-0 flex justify-between font-mono text-[10px] text-slate-400 px-1 pt-4">
+<span>08:00</span>
+<span>10:00</span>
+<span>12:00</span>
+<span>14:00</span>
+<span>16:00</span>
+<span>18:00</span>
+<span>20:00</span>
+</div>
+</div>
+</div>
+<!-- Signal Integrity Bar Chart -->
+<div class="col-span-12 lg:col-span-4 glass-panel ghost-border rounded-xl p-8 shadow-sm">
+<h4 class="text-lg font-bold text-on-surface mb-1">Signal Integrity</h4>
+<p class="text-sm text-on-surface-variant mb-12">Packet consistency score</p>
+<div class="space-y-6">
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-mono uppercase text-slate-500">
+<span>Node Alpha</span>
+<span class="text-on-surface font-bold">98%</span>
+</div>
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[98%] rounded-full"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-mono uppercase text-slate-500">
+<span>Node Sigma</span>
+<span class="text-on-surface font-bold">84%</span>
+</div>
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary-container w-[84%] rounded-full"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-mono uppercase text-slate-500">
+<span>Node Delta</span>
+<span class="text-on-surface font-bold">92%</span>
+</div>
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-indigo-400 w-[92%] rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- System Logs Terminal Panel -->
+<div class="col-span-12 bg-slate-900 rounded-xl overflow-hidden shadow-2xl flex flex-col h-[500px]">
+<!-- Terminal Header -->
+<div class="bg-slate-800 px-6 py-3 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="flex gap-1.5">
+<div class="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></div>
+</div>
+<span class="text-[11px] font-mono text-slate-400 font-medium tracking-tight">System Logs — root@luminous:~</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 text-sm">filter_alt</span>
+<span class="material-symbols-outlined text-slate-400 text-sm">download</span>
+</div>
+</div>
+<!-- Terminal Body -->
+<div class="flex-1 p-6 font-mono text-[13px] leading-relaxed overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700">
+<div class="space-y-1">
+<p class="text-slate-500">[2023-10-24 14:22:01] <span class="text-emerald-400">INFO</span>: Initialization sequence complete. All cores responsive.</p>
+<p class="text-slate-500">[2023-10-24 14:22:05] <span class="text-emerald-400">INFO</span>: Secure handshake established with Global Edge (London-IX).</p>
+<p class="text-slate-500">[2023-10-24 14:23:12] <span class="text-blue-400">DEBUG</span>: Memory compaction successful. Freed 1.4GB in shared cache.</p>
+<p class="text-slate-500">[2023-10-24 14:24:55] <span class="text-amber-400">WARN</span>: Minor jitter detected in Node Sigma. Initiating re-route protocols...</p>
+<p class="text-slate-500">[2023-10-24 14:25:01] <span class="text-emerald-400">INFO</span>: Traffic successfully shifted to Node Delta. Sigma integrity restored.</p>
+<p class="text-slate-300">$ tail -f /var/log/system_performance.log</p>
+<p class="text-indigo-400">Monitoring real-time throughput velocity...</p>
+<p class="text-slate-500">[2023-10-24 14:26:10] <span class="text-emerald-400">OK</span>: Throughput spike observed: 44.2 Gbps.</p>
+<p class="text-slate-500">[2023-10-24 14:27:18] <span class="text-blue-400">DEBUG</span>: Cache miss at 0.04%. Performance within optimized thresholds.</p>
+<p class="text-slate-300 font-bold">_</p>
+</div>
+</div>
+<!-- Terminal Input Area -->
+<div class="bg-slate-800/50 p-4 border-t border-slate-800">
+<div class="flex items-center gap-3">
+<span class="text-indigo-400 font-mono font-bold">➜</span>
+<input class="bg-transparent border-none focus:ring-0 w-full text-slate-100 font-mono text-[13px] placeholder:text-slate-600" placeholder="Type a command..." type="text"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Metrics Footer -->
+<footer class="grid grid-cols-1 md:grid-cols-4 gap-6 pt-12">
+<div class="space-y-1">
+<p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Active Threads</p>
+<p class="text-2xl font-mono font-bold text-on-surface">1,204</p>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">IO Wait</p>
+<p class="text-2xl font-mono font-bold text-on-surface">0.02ms</p>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Request Rate</p>
+<p class="text-2xl font-mono font-bold text-primary">12.4k/s</p>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Node Health</p>
+<p class="text-2xl font-mono font-bold text-emerald-600">Optimal</p>
+</div>
+</footer>
+</div>
+</main>
+</body></html>

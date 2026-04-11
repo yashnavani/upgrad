@@ -22,13 +22,13 @@ import { cn } from "@/lib/utils";
 import { useSidebar } from "./SidebarProvider";
 
 const NAV_ITEMS = [
-  { label: "Dashboard", href: "/", icon: LayoutDashboard },
-  { label: "AI Insights", href: "/ai/insights", icon: Lightbulb },
-  { label: "Rules & Policies", href: "/ai/policies", icon: Workflow },
-  { label: "Audit Logs", href: "/logs", icon: List },
-  { label: "Users & Access", href: "/admin/users", icon: Users },
-  { label: "Pending Approvals", href: "/admin/approvals", icon: ClipboardCheck },
-  { label: "Settings", href: "/settings", icon: Settings },
+  { label: "Overview", href: "/", icon: LayoutDashboard },
+  { label: "Agent insights", href: "/ai/insights", icon: Lightbulb },
+  { label: "Policies & tools", href: "/ai/policies", icon: Workflow },
+  { label: "Run logs", href: "/logs", icon: List },
+  { label: "Team & clients", href: "/admin/users", icon: Users },
+  { label: "Human approvals", href: "/admin/approvals", icon: ClipboardCheck },
+  { label: "Workspace settings", href: "/settings", icon: Settings },
 ];
 
 function NavLinks({
@@ -54,42 +54,16 @@ function NavLinks({
             href={item.href}
             onClick={onClick}
             className={cn(
-              "group relative flex items-center gap-3 overflow-hidden rounded-lg px-3 py-2.5 transition-all duration-300",
+              "group relative flex items-center gap-3 overflow-hidden rounded-xl px-4 py-3 font-medium transition-all duration-300",
               isActive
-                ? "text-zinc-100"
-                : "text-zinc-400 hover:text-zinc-100",
+                ? "bg-sidebar-accent text-sidebar-primary font-semibold"
+                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
               isCollapsed ? "justify-center" : "justify-start"
             )}
             title={isCollapsed ? item.label : undefined}
           >
-            {isActive && (
-              <div
-                className="absolute inset-0 z-0 border-l-2 border-primary bg-primary/10"
-                aria-hidden
-              />
-            )}
-            {!isActive && (
-              <div
-                className="absolute inset-0 z-0 bg-zinc-800/0 transition-colors group-hover:bg-zinc-800/50"
-                aria-hidden
-              />
-            )}
-            <item.icon
-              className={cn(
-                "relative z-10 h-5 w-5 shrink-0 transition-transform duration-300",
-                isActive ? "text-primary" : "group-hover:scale-110"
-              )}
-            />
-            {!isCollapsed && (
-              <span
-                className={cn(
-                  "relative z-10 text-sm font-medium",
-                  isActive && "font-semibold text-zinc-100"
-                )}
-              >
-                {item.label}
-              </span>
-            )}
+            <item.icon className="h-5 w-5 shrink-0" />
+            {!isCollapsed && <span>{item.label}</span>}
           </Link>
         );
       })}
@@ -105,24 +79,29 @@ export function Sidebar() {
     <>
       <aside
         className={cn(
-          "z-20 hidden h-screen flex-col border-r border-zinc-900 bg-zinc-950 text-zinc-50 transition-all duration-300 md:flex",
+          "z-20 hidden h-screen flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground backdrop-blur-xl transition-all duration-300 md:flex",
           isCollapsed ? "w-20" : "w-64"
         )}
       >
         <div
           className={cn(
-            "flex h-16 items-center px-4",
-            isCollapsed ? "justify-center" : "justify-between"
+            "flex h-[4.25rem] flex-col justify-center gap-1 px-4 pb-1",
+            isCollapsed ? "items-center" : ""
           )}
         >
           {!isCollapsed && (
-            <span className="text-lg font-bold tracking-tight">
-              Master<span className="text-primary">Foundation</span>
-            </span>
+            <div>
+              <span className="text-xl font-bold tracking-tighter text-sidebar-primary">
+                Luminous
+              </span>
+              <p className="mt-1 text-[10px] font-medium tracking-widest text-muted-foreground uppercase">
+                Enterprise SaaS
+              </p>
+            </div>
           )}
           {isCollapsed && (
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary font-bold">
-              M
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sidebar-accent border border-sidebar-primary/20 font-bold text-sidebar-primary">
+              L
             </div>
           )}
         </div>
@@ -131,12 +110,12 @@ export function Sidebar() {
           <NavLinks isCollapsed={isCollapsed} />
         </div>
 
-        <div className="flex justify-center border-t border-zinc-900 p-4">
+        <div className="mt-auto flex justify-center border-t border-sidebar-border p-4">
           <Button
             variant="ghost"
             size="icon"
             onClick={toggleCollapse}
-            className="text-zinc-400 hover:bg-zinc-800 hover:text-zinc-50"
+            className="text-muted-foreground hover:bg-muted/50 hover:text-foreground"
           >
             {isCollapsed ? (
               <ChevronRight className="h-5 w-5" />
@@ -151,17 +130,17 @@ export function Sidebar() {
         <SheetContent
           side="left"
           showCloseButton={false}
-          className="w-72 border-r-zinc-900 bg-zinc-950 p-0 text-zinc-50"
+          className="w-72 border-r-sidebar-border bg-sidebar p-0 text-sidebar-foreground backdrop-blur-xl"
         >
-          <div className="flex h-16 items-center justify-between border-b border-zinc-900 px-6">
-            <SheetTitle className="text-lg font-bold text-zinc-50">
-              Master<span className="text-primary">Foundation</span>
+          <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-6">
+            <SheetTitle className="text-xl font-bold tracking-tighter text-sidebar-primary">
+              Luminous
             </SheetTitle>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setMobileOpen(false)}
-              className="text-zinc-400 hover:bg-zinc-800 hover:text-zinc-50"
+              className="text-muted-foreground hover:bg-muted/50 hover:text-foreground"
             >
               <X className="h-5 w-5" />
             </Button>

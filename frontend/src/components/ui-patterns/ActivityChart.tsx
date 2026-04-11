@@ -20,14 +20,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-type Point = {
-  name: string;
-  requests: number;
-  ai_calls: number;
-};
+import type { ChartDay } from "@/lib/dashboard-types";
 
-/** Deterministic series so SSR and client match (no hydration flicker). */
-function generateData(): Point[] {
+type Point = ChartDay;
+
+/** Demo series when no API data is passed (non-production previews). */
+function generateDemoData(): Point[] {
   const data: Point[] = [];
   const today = new Date();
   for (let i = 6; i >= 0; i--) {
@@ -84,11 +82,60 @@ function CustomTooltip({
 
 const MUTED_TICK = { fontSize: 12, fill: "var(--muted-foreground)" };
 
-export function ActivityChart() {
-  const data = React.useMemo(() => generateData(), []);
+export type ActivityChartProps = {
+  /** When set, chart uses API telemetry (typically last 7 days). */
+  data?: Point[] | null;
+  /** When true and `data` is empty, show empty state instead of demo data. */
+  liveOnly?: boolean;
+};
+
+export function ActivityChart({ data, liveOnly = false }: ActivityChartProps) {
+  const chartData = React.useMemo(() => {
+    if (liveOnly) {
+      return data && data.length > 0 ? data : [];
+    }
+    if (data && data.length > 0) return data;
+    return generateDemoData();
+  }, [data, liveOnly]);
+
+  const maxVal = React.useMemo(
+    () =>
+      Math.max(
+        1,
+        ...chartData.flatMap((d) => [d.requests, d.ai_calls])
+      ),
+    [chartData]
+  );
+
+  const yFormatter = (v: number) =>
+    maxVal < 800 ? String(Math.round(v)) : `${(v / 1000).toFixed(1)}k`;
+
   const uid = React.useId().replace(/:/g, "");
   const gradRequests = `colorRequests-${uid}`;
   const gradAi = `colorAI-${uid}`;
+
+  if (liveOnly && chartData.length === 0) {
+    return (
+      <Card className="glass-panel w-full">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Activity className="h-5 w-5 text-primary" />
+            Usage overview
+          </CardTitle>
+          <CardDescription>
+            Audit-based chart is available to administrators. Generate API
+            traffic to see request and /ai/chat volume for the last 7 days.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex h-[300px] items-center justify-center px-4 text-center text-sm text-muted-foreground">
+            No data in this window yet, or sign in as a superuser to load
+            telemetry from run logs.
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="glass-panel w-full">
@@ -100,7 +147,9 @@ export function ActivityChart() {
               Usage overview
             </CardTitle>
             <CardDescription>
-              API requests and AI invocations (last 7 days)
+              {liveOnly
+                ? "API requests and /ai/chat calls from audit logs (last 7 days)"
+                : "API requests and AI invocations (last 7 days)"}
             </CardDescription>
           </div>
         </div>
@@ -109,7 +158,7 @@ export function ActivityChart() {
         <div className="mt-4 h-[300px] w-full min-h-[300px] min-w-0">
           <ResponsiveContainer width="100%" height="100%" minWidth={0}>
             <AreaChart
-              data={data}
+              data={chartData}
               margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
             >
               <defs>
@@ -138,7 +187,7 @@ export function ActivityChart() {
                 axisLine={false}
                 tickLine={false}
                 tick={MUTED_TICK}
-                tickFormatter={(value) => `${(value / 1000).toFixed(1)}k`}
+                tickFormatter={yFormatter}
               />
               <Tooltip
                 content={<CustomTooltip />}

@@ -51,7 +51,7 @@ export function AIChatbot() {
     {
       role: "model",
       content:
-        "Greetings. I am the Master Foundation AI. How can I assist you today?",
+        "I'm your workspace agent. Ask about policies, run summaries, or draft steps for a client deployment — I'll use tools when the backend allows.",
     },
   ]);
   const [input, setInput] = useState("");
@@ -135,7 +135,7 @@ export function AIChatbot() {
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className="glass-panel glass-panel--static fixed right-4 bottom-4 z-50 flex h-[600px] max-h-[80vh] w-full max-w-[400px] flex-col overflow-hidden rounded-2xl shadow-2xl sm:right-8 sm:bottom-8"
             role="dialog"
-            aria-label="AI Assistant"
+            aria-label="Agent assistant"
           >
             <div className="flex items-center justify-between border-b border-white/10 bg-zinc-950 px-4 py-3 text-white">
               <div className="flex items-center gap-2">
@@ -143,9 +143,9 @@ export function AIChatbot() {
                   <BrainCircuit className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold">AI Assistant</h3>
+                  <h3 className="text-sm font-semibold">Workspace agent</h3>
                   <p className="text-[10px] text-zinc-400">
-                    Ready to help
+                    Tools + policies enabled
                   </p>
                 </div>
               </div>
@@ -242,7 +242,7 @@ export function AIChatbot() {
                     <div className="flex max-w-[85%] items-center gap-2 rounded-2xl rounded-bl-sm border border-border bg-white px-4 py-3 text-foreground shadow-sm dark:bg-zinc-900">
                       <Loader2 className="h-4 w-4 animate-spin text-primary" />
                       <span className="text-xs text-muted-foreground">
-                        Thinking...
+                        Running…
                       </span>
                     </div>
                   </div>

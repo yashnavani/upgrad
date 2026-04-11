@@ -36,6 +36,8 @@ services:
     env_file:
       - ./.env
     environment:
+      # Same default as frontend; maps to JWT via AUTH_SECRET alias (see backend config)
+      AUTH_SECRET: ${AUTH_SECRET:-change-me-in-production-min-32-chars}
       POSTGRES_SERVER: database
       POSTGRES_PORT: "5432"
       POSTGRES_USER: postgres
@@ -77,6 +79,9 @@ services:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000/api/v1}
       # Server-side login from Next.js → FastAPI inside Compose network
       INTERNAL_API_URL: http://backend:8000/api/v1
+      # Google OAuth
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
     depends_on:
       backend:
         condition: service_healthy

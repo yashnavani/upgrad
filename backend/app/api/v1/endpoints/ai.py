@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import get_current_user, get_db
 from app.models.user import User
 from app.schemas.ai import ChatRequest, ChatResponse, ToolCallRecord
-from app.services.ai_agent import AgentDependencies, master_agent
+from app.services.ai_agent import AgentDependencies, get_master_agent
 from app.services.experience_recall import get_similar_past_lessons
 
 router = APIRouter()
@@ -38,6 +38,14 @@ async def ai_chat_endpoint(
             message_history.append(ModelResponse(parts=[TextPart(content=msg.content)]))
 
     try:
+        agent = get_master_agent()
+    except RuntimeError as e:
+        raise HTTPException(
+            status_code=503,
+            detail=str(e),
+        ) from e
+
+    try:
         past_lessons = await get_similar_past_lessons(db, request.message)
         contextual_prompt = (
             f"USER REQUEST: {request.message}\n\n"
@@ -45,7 +53,7 @@ async def ai_chat_endpoint(
             "Instructions: Based on the lessons above, avoid making the same mistakes. "
             "If the user is asking for something that was previously rejected, be extra cautious."
         )
-        result = await master_agent.run(
+        result = await agent.run(
             contextual_prompt,
             deps=deps,
             message_history=message_history or None,

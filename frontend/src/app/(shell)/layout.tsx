@@ -16,10 +16,12 @@ export default function ShellLayout({
         <div className="flex h-screen overflow-hidden">
           <Sidebar />
 
-          <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-muted/10">
+          <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-transparent">
             <Header />
 
-            <main className="flex-1 overflow-y-auto p-4 sm:p-8">{children}</main>
+            <main className="workspace-canvas flex-1 overflow-y-auto p-4 sm:p-8">
+              {children}
+            </main>
           </div>
 
           <CommandMenu />

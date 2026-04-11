@@ -1,5 +1,11 @@
 .env
 
+# MCP config may contain API keys — keep local only
+.cursor/mcp.json
+
+# Local Stitch SDK fetcher
+tools/stitch-fetch/node_modules/
+
 # Stale duplicate after flattening layout (safe to delete locally)
 master-foundation/
 .venv/

@@ -1,0 +1,11 @@
+{
+  "name": "agenticai-template",
+  "private": true,
+  "description": "Monorepo root — app code lives in frontend/ and backend/",
+  "scripts": {
+    "dev": "npm run dev --prefix frontend",
+    "build": "npm run build --prefix frontend",
+    "lint": "npm run lint --prefix frontend",
+    "verify": "npm run verify --prefix frontend"
+  }
+}

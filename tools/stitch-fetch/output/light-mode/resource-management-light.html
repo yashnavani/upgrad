@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Luminous - Resource Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-surface": "#191c1e",
+                    "surface": "#f7f9fb",
+                    "on-secondary-container": "#494b83",
+                    "inverse-primary": "#c0c1ff",
+                    "tertiary-fixed-dim": "#ffb783",
+                    "outline-variant": "#c7c4d7",
+                    "primary-container": "#6063ee",
+                    "primary": "#4648d4",
+                    "surface-dim": "#d8dadc",
+                    "secondary-container": "#bdbefe",
+                    "secondary-fixed-dim": "#c0c1ff",
+                    "inverse-surface": "#2d3133",
+                    "secondary": "#575992",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-fixed": "#301400",
+                    "on-secondary-fixed-variant": "#404178",
+                    "on-tertiary-fixed-variant": "#703700",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-primary-fixed": "#07006c",
+                    "tertiary": "#904900",
+                    "surface-container-high": "#e6e8ea",
+                    "on-tertiary-container": "#fffbff",
+                    "background": "#f7f9fb",
+                    "error-container": "#ffdad6",
+                    "primary-fixed": "#e1e0ff",
+                    "error": "#ba1a1a",
+                    "outline": "#767586",
+                    "on-error": "#ffffff",
+                    "surface-variant": "#e0e3e5",
+                    "surface-container": "#eceef0",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed": "#e1e0ff",
+                    "on-primary-container": "#fffbff",
+                    "on-secondary-fixed": "#13144a",
+                    "surface-container-low": "#f2f4f6",
+                    "inverse-on-surface": "#eff1f3",
+                    "tertiary-container": "#b55d00",
+                    "on-primary": "#ffffff",
+                    "on-surface-variant": "#464554",
+                    "primary-fixed-dim": "#c0c1ff",
+                    "on-primary-fixed-variant": "#2f2ebe",
+                    "tertiary-fixed": "#ffdcc5",
+                    "surface-bright": "#f7f9fb",
+                    "on-background": "#191c1e",
+                    "surface-tint": "#494bd6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Inter"],
+                    "body": ["Inter"],
+                    "label": ["Inter"],
+                    "mono": ["JetBrains Mono"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(199, 196, 215, 0.1);
+        }
+        .primary-gradient {
+            background: linear-gradient(135deg, #4648d4 0%, #6063ee 100%);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface">
+<!-- Sidebar Navigation -->
+<aside class="h-screen w-64 fixed left-0 top-0 z-50 bg-slate-50 flex flex-col py-8 gap-y-6">
+<div class="px-8 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full primary-gradient flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<div>
+<h1 class="text-lg font-black text-indigo-600 tracking-tighter">Luminous</h1>
+<p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Enterprise Curator</p>
+</div>
+</div>
+<nav class="flex flex-col gap-y-1 mt-4">
+<a class="flex items-center gap-3 px-8 py-3 text-slate-500 hover:text-indigo-500 hover:translate-x-1 duration-300 transition-all font-['Inter'] text-sm tracking-wide" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-8 py-3 text-indigo-600 font-bold border-r-2 border-indigo-600 font-['Inter'] text-sm tracking-wide bg-indigo-50/50" href="#">
+<span class="material-symbols-outlined">analytics</span>
+                Analytics
+            </a>
+<a class="flex items-center gap-3 px-8 py-3 text-slate-500 hover:text-indigo-500 hover:translate-x-1 duration-300 transition-all font-['Inter'] text-sm tracking-wide" href="#">
+<span class="material-symbols-outlined">folder_open</span>
+                Projects
+            </a>
+<a class="flex items-center gap-3 px-8 py-3 text-slate-500 hover:text-indigo-500 hover:translate-x-1 duration-300 transition-all font-['Inter'] text-sm tracking-wide" href="#">
+<span class="material-symbols-outlined">group</span>
+                Team
+            </a>
+<a class="flex items-center gap-3 px-8 py-3 text-slate-500 hover:text-indigo-500 hover:translate-x-1 duration-300 transition-all font-['Inter'] text-sm tracking-wide" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Settings
+            </a>
+</nav>
+<div class="mt-auto px-8">
+<div class="p-4 rounded-xl bg-surface-container-low border border-outline-variant/10">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Usage Limit</p>
+<div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full w-3/4 primary-gradient"></div>
+</div>
+<p class="text-[10px] text-slate-500 mt-2">75% of compute capacity used</p>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 min-h-screen">
+<!-- Header Section -->
+<header class="sticky top-0 w-full z-40 bg-white/10 backdrop-blur-2xl flex justify-between items-center px-8 h-20 shadow-[0px_4px_12px_rgba(25,28,30,0.04)]">
+<div class="flex flex-col">
+<h2 class="text-2xl font-extrabold tracking-tight text-on-surface">Resource Management</h2>
+<p class="text-sm text-on-surface-variant/70">Oversee and scale your active cloud infrastructure.</p>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative flex items-center bg-surface-container-low rounded-full px-4 h-10 w-64 group transition-all focus-within:ring-2 ring-primary/20">
+<span class="material-symbols-outlined text-slate-400 text-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full placeholder:text-slate-400" placeholder="Global search..." type="text"/>
+</div>
+<button class="flex items-center gap-2 px-6 h-11 primary-gradient text-white rounded-xl font-semibold text-sm hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-sm">add_circle</span>
+                    Deploy New Resource
+                </button>
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center relative cursor-pointer hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<span class="absolute top-2 right-2.5 w-2 h-2 bg-error rounded-full border-2 border-surface"></span>
+</div>
+</div>
+</header>
+<div class="p-8">
+<!-- Filter Bar Section -->
+<section class="flex flex-wrap items-center justify-between gap-4 mb-8">
+<div class="flex gap-3">
+<div class="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-outline-variant/10 text-sm font-medium text-slate-600 cursor-pointer hover:bg-slate-50 transition-colors">
+<span>Status</span>
+<span class="material-symbols-outlined text-xs">expand_more</span>
+</div>
+<div class="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-outline-variant/10 text-sm font-medium text-slate-600 cursor-pointer hover:bg-slate-50 transition-colors">
+<span>Region</span>
+<span class="material-symbols-outlined text-xs">expand_more</span>
+</div>
+<div class="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-outline-variant/10 text-sm font-medium text-slate-600 cursor-pointer hover:bg-slate-50 transition-colors">
+<span>Type</span>
+<span class="material-symbols-outlined text-xs">expand_more</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Active nodes: 142</p>
+<div class="flex border border-outline-variant/10 rounded-lg overflow-hidden">
+<button class="p-2 bg-surface-container-low text-primary"><span class="material-symbols-outlined text-sm">view_list</span></button>
+<button class="p-2 bg-white text-slate-400"><span class="material-symbols-outlined text-sm">grid_view</span></button>
+</div>
+</div>
+</section>
+<!-- Main Table Grid -->
+<div class="bg-surface-container-low rounded-3xl p-1 overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-separate border-spacing-y-2 px-4 pb-4">
+<thead>
+<tr class="text-[10px] uppercase tracking-[0.1em] text-slate-400 font-black">
+<th class="px-6 py-4">Resource Name</th>
+<th class="px-6 py-4">Resource ID</th>
+<th class="px-6 py-4">Status</th>
+<th class="px-6 py-4">Type</th>
+<th class="px-6 py-4">Region</th>
+<th class="px-6 py-4">Uptime</th>
+<th class="px-6 py-4 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="text-sm">
+<!-- Row 1 -->
+<tr class="glass-panel group transition-all hover:scale-[1.002] hover:bg-white/60">
+<td class="px-6 py-5 rounded-l-2xl">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">dns</span>
+</div>
+<span class="font-bold text-slate-700">Compute-Engine-A1</span>
+</div>
+</td>
+<td class="px-6 py-5 font-mono text-xs text-slate-400">LUM-9428-XQ</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-wider">
+<span class="w-1 h-1 rounded-full bg-emerald-600"></span>
+                                        Running
+                                    </span>
+</td>
+<td class="px-6 py-5 text-slate-600">vCPU Optimized</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm bg-slate-200 overflow-hidden">
+<img alt="USA Flag" class="w-full h-full object-cover" data-alt="close up of united states flag texture with high quality fabric details" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9Ny46w5j3z-cvvtHskJYvhM58thh0q9E2wDzhhQBBiuzF60_adRgVNXXfTWPDlt6Musrc-xWTYIhMzhgarfTECepcY_pZ0m-gi2KbBS5yaJFPSEv7zMnDQ7Q_Aq-_t-nAjqKsP-dusmmiN6o1CAlm23GfBnWoXMkuH4fhiyL2ER-0CXZmJcS-sVn0HHdRLZx0KCb_AGFixUEmuFMheyoCc54HRwHMMGmLClEZEbnqJZGXPl0v8SesrAVyNjzudJ0tfW-Hl5XKmbdt"/>
+</div>
+<span class="text-slate-600">us-east-1</span>
+</div>
+</td>
+<td class="px-6 py-5 font-mono text-indigo-600 font-medium">422h 12m</td>
+<td class="px-6 py-5 text-right rounded-r-2xl">
+<button class="p-2 text-slate-400 hover:text-indigo-600 transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="glass-panel group transition-all hover:scale-[1.002] hover:bg-white/60">
+<td class="px-6 py-5 rounded-l-2xl">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center text-orange-600">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">database</span>
+</div>
+<span class="font-bold text-slate-700">Main-DB-Cluster</span>
+</div>
+</td>
+<td class="px-6 py-5 font-mono text-xs text-slate-400">LUM-0031-DB</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-600 text-[10px] font-bold uppercase tracking-wider">
+<span class="w-1 h-1 rounded-full bg-amber-600"></span>
+                                        Scaling
+                                    </span>
+</td>
+<td class="px-6 py-5 text-slate-600">PostgreSQL High-Avail</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm bg-slate-200 overflow-hidden">
+<img alt="EU Flag" class="w-full h-full object-cover" data-alt="european union flag with gold stars on blue background minimalist design" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByKa4OWWO0GLffWPkCg7F4ZaS3hQuzGYiqsXKZLZq35XPSSBuMCqHm3ye8AF5vV9uUt5qY9-4jhbgOh_HbJvfHWD6gUFklBZyD6yLKdxK5tSJMd4joF4xIAO8cWlP5gEeheYC9KjXGLtMcJuu1N1Dlixv59VGFnEkJze29ydaYcErLXo8V9s2pXa_cdxCHP_Z9TKiWXzNwCqMopBg8y2d8bQu0Is3HHf5SqY1sWatF2oOu5tD_CDg2t_6LvaxkqAFjc954E9uDvbkJ"/>
+</div>
+<span class="text-slate-600">eu-central-1</span>
+</div>
+</td>
+<td class="px-6 py-5 font-mono text-indigo-600 font-medium">1,240h 55m</td>
+<td class="px-6 py-5 text-right rounded-r-2xl">
+<button class="p-2 text-slate-400 hover:text-indigo-600 transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="glass-panel group transition-all hover:scale-[1.002] hover:bg-white/60">
+<td class="px-6 py-5 rounded-l-2xl">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">memory</span>
+</div>
+<span class="font-bold text-slate-700">Worker-Batch-04</span>
+</div>
+</td>
+<td class="px-6 py-5 font-mono text-xs text-slate-400">LUM-7712-BT</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider">
+<span class="w-1 h-1 rounded-full bg-slate-500"></span>
+                                        Stopped
+                                    </span>
+</td>
+<td class="px-6 py-5 text-slate-600">General Purpose</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm bg-slate-200 overflow-hidden">
+<img alt="Japan Flag" class="w-full h-full object-cover" data-alt="japanese flag with red circle on white background clean geometric design" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDVcUD5jDZ-335lMqnObOaPC_HUvvcMqif9uYoSjy_hqeV2giDlFN5r_5U1QuUR2NQT7Gbww5HsWbti9KcdGDqDHn6HDz3BsfBEmcE_kE24aWvb565pd8_ZkDrh_CCwZ0aoWdB_Aav5JTNYSlmiMk9gqBhyoBSUiv9r0tpO-sGDaXoKMW1mXK-cjG27ZGj00M2XxG7UlgZ0aRRe4DeL2nYR34El4TLIrv0i7Wgj3cl9ChSgcgopmccRFznrVfmlY15HOXf-DvMi3pv"/>
+</div>
+<span class="text-slate-600">ap-northeast-1</span>
+</div>
+</td>
+<td class="px-6 py-5 font-mono text-slate-400 font-medium">0h 0m</td>
+<td class="px-6 py-5 text-right rounded-r-2xl">
+<button class="p-2 text-slate-400 hover:text-indigo-600 transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="glass-panel group transition-all hover:scale-[1.002] hover:bg-white/60">
+<td class="px-6 py-5 rounded-l-2xl">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center text-rose-600">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">shield</span>
+</div>
+<span class="font-bold text-slate-700">Security-Gateway-VX</span>
+</div>
+</td>
+<td class="px-6 py-5 font-mono text-xs text-slate-400">LUM-1109-SG</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 text-rose-600 text-[10px] font-bold uppercase tracking-wider">
+<span class="w-1 h-1 rounded-full bg-rose-600"></span>
+                                        Alert
+                                    </span>
+</td>
+<td class="px-6 py-5 text-slate-600">Threat Detection</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm bg-slate-200 overflow-hidden">
+<img alt="USA Flag" class="w-full h-full object-cover" data-alt="close up of united states flag texture with high quality fabric details" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZjzbN140uKhPAHTzD9US-IpnE8MakZvKZdaDLcaIGoAzY5Z-MjX6pSw89MbJHLNv1dBTBCkCuYO0jbyaoreQ1dpT0HK9XmUwpeoJgOBkawc1rWpTjXZLtIIDANY3qlB84GlHze5b_whotqwnXTWhXF6IjLK01opngOOIvhpaGA-H55LLGjFGAMfoCHWtTNgfKMR8oIqrY7Dcu5YXZYVZz7daC4jigUNfsYuj6ICzh0Y2KZZwvwDdEvS8-QCJ9sNIa65eaXVVkr9WE"/>
+</div>
+<span class="text-slate-600">us-west-2</span>
+</div>
+</td>
+<td class="px-6 py-5 font-mono text-indigo-600 font-medium">8,912h 10m</td>
+<td class="px-6 py-5 text-right rounded-r-2xl">
+<button class="p-2 text-slate-400 hover:text-indigo-600 transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="glass-panel group transition-all hover:scale-[1.002] hover:bg-white/60">
+<td class="px-6 py-5 rounded-l-2xl">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">cloud_queue</span>
+</div>
+<span class="font-bold text-slate-700">Asset-Storage-S3</span>
+</div>
+</td>
+<td class="px-6 py-5 font-mono text-xs text-slate-400">LUM-2244-ST</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-wider">
+<span class="w-1 h-1 rounded-full bg-emerald-600"></span>
+                                        Running
+                                    </span>
+</td>
+<td class="px-6 py-5 text-slate-600">Object Storage</td>
+<td class="px-6 py-5">
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm bg-slate-200 overflow-hidden">
+<img alt="UK Flag" class="w-full h-full object-cover" data-alt="union jack flag of united kingdom with vivid red white and blue colors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjj-QtgzIwm5Nkebu5HDr3qKapNf2nksIGDGIRKzm88n34Y_EwyZBAsdrJ0YgcrmKT3h3SrKUka8ZNCVcR0LtGrtjkynoO1HqqJP4_iFtksFpCiO8DcDNshe7zN1maLG1N-GrRIOUGDIPS0vAYSjEF0jH0P4k41xvYiJ484K_vf6fWpVQHodAShQspnx3RHFLZ3JLIQbpdCVdSrHZMpXJvHkNBCvZUndJrUkcGA04TmgWuThexOk9LLmwXsfV6-SG304T26ZTjutPf"/>
+</div>
+<span class="text-slate-600">eu-west-2</span>
+</div>
+</td>
+<td class="px-6 py-5 font-mono text-indigo-600 font-medium">12,488h 05m</td>
+<td class="px-6 py-5 text-right rounded-r-2xl">
+<button class="p-2 text-slate-400 hover:text-indigo-600 transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-8 py-4 flex items-center justify-between border-t border-outline-variant/5">
+<p class="text-xs text-slate-500">Showing 1 to 5 of 142 resources</p>
+<div class="flex gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-outline-variant/10 text-slate-400 hover:text-indigo-600 transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg primary-gradient text-white font-bold text-xs">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-outline-variant/10 text-slate-600 hover:text-indigo-600 transition-colors text-xs font-bold">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-outline-variant/10 text-slate-600 hover:text-indigo-600 transition-colors text-xs font-bold">3</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-outline-variant/10 text-slate-400 hover:text-indigo-600 transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Dashboard Bottom Widgets - Bento Style -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+<div class="glass-panel p-6 rounded-3xl relative overflow-hidden group">
+<div class="flex flex-col h-full justify-between">
+<div>
+<p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Global Health</p>
+<h3 class="text-3xl font-extrabold text-indigo-600 font-mono">99.98%</h3>
+</div>
+<div class="mt-8 flex items-end justify-between">
+<div class="flex gap-1 h-12 items-end">
+<div class="w-1 bg-indigo-100 h-1/2 rounded-full"></div>
+<div class="w-1 bg-indigo-200 h-2/3 rounded-full"></div>
+<div class="w-1 bg-indigo-300 h-3/4 rounded-full"></div>
+<div class="w-1 bg-indigo-400 h-full rounded-full"></div>
+<div class="w-1 bg-indigo-500 h-4/5 rounded-full"></div>
+<div class="w-1 bg-indigo-600 h-2/3 rounded-full"></div>
+</div>
+<span class="text-[10px] font-bold text-emerald-500 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">arrow_upward</span> 0.02%
+                            </span>
+</div>
+</div>
+</div>
+<div class="glass-panel p-6 rounded-3xl relative overflow-hidden group">
+<div class="flex flex-col h-full justify-between">
+<div>
+<p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Cost Projection</p>
+<h3 class="text-3xl font-extrabold text-indigo-600 font-mono">$12,482</h3>
+</div>
+<div class="mt-8 flex items-center justify-between text-xs font-bold text-slate-500">
+<span>Current Spend</span>
+<span class="font-mono text-slate-700">$9,241.00</span>
+</div>
+</div>
+</div>
+<div class="primary-gradient p-6 rounded-3xl relative overflow-hidden group">
+<div class="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
+<div class="flex flex-col h-full justify-between text-white">
+<div>
+<p class="text-[10px] font-black text-white/60 uppercase tracking-widest mb-1">Infrastructure Load</p>
+<h3 class="text-3xl font-extrabold font-mono">64.2%</h3>
+</div>
+<p class="text-[10px] font-medium text-white/80 mt-4 leading-relaxed">System performing within optimal parameters. No scaling events scheduled.</p>
+</div>
+</div>
+</section>
+</div>
+</main>
+</body></html>

@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useUI } from "@/components/providers/UIProvider";
 import { NotificationCenter } from "@/components/ui-patterns/NotificationCenter";
 
@@ -37,7 +38,7 @@ export function Header() {
   };
 
   const pathSegment =
-    pathname === "/" ? "Dashboard" : pathname.split("/").filter(Boolean).pop();
+    pathname === "/" ? "Overview" : pathname.split("/").filter(Boolean).pop();
   const pageTitle = pathSegment ? titleCaseSegment(pathSegment) : "";
 
   const email = session?.user?.email ?? "Loading...";
@@ -45,7 +46,7 @@ export function Header() {
   const initial = (email[0] ?? "U").toUpperCase();
 
   return (
-    <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-border/40 bg-white/50 px-4 backdrop-blur-md sm:px-6 dark:bg-zinc-950/50">
+    <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-border bg-card/60 px-4 backdrop-blur-2xl shadow-sm sm:px-6">
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
@@ -55,7 +56,7 @@ export function Header() {
         >
           <Menu className="h-5 w-5" />
         </Button>
-        <h1 className="text-sm font-semibold tracking-tight text-foreground">
+        <h1 className="font-heading text-sm font-semibold tracking-tight text-foreground">
           {pageTitle}
         </h1>
       </div>
@@ -68,7 +69,7 @@ export function Header() {
         >
           <Search className="h-4 w-4" />
           <span className="flex-1 text-left text-xs font-normal">
-            Search commands...
+            Search workspace, pages, actions…
           </span>
           <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
             <Command className="h-3 w-3" />K
@@ -81,13 +82,15 @@ export function Header() {
           className="hidden items-center gap-2 rounded-full bg-primary px-4 text-white shadow-sm hover:bg-primary/90 sm:flex"
         >
           <BrainCircuit className="h-4 w-4" />
-          <span className="text-xs font-semibold">Agent</span>
+          <span className="text-xs font-semibold">Agent panel</span>
           <kbd className="pointer-events-none inline-flex h-4 select-none items-center gap-1 rounded bg-white/20 px-1 font-mono text-[10px] font-medium text-white">
             <Command className="h-2 w-2" />J
           </kbd>
         </Button>
 
         <NotificationCenter />
+
+        <ThemeToggle />
 
         <DropdownMenu>
           <DropdownMenuTrigger className="ml-2 inline-flex h-8 w-8 items-center justify-center rounded-full border-0 bg-transparent outline-none ring-offset-background transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">

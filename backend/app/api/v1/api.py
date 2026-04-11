@@ -3,7 +3,9 @@ from fastapi import APIRouter
 
 from app.api.v1.endpoints import (
     ai,
+    audit,
     auth,
+    dashboard,
     decisions,
     feedback,
     files,
@@ -19,6 +21,8 @@ api_router = APIRouter()
 
 api_router.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 api_router.include_router(users.router, prefix="/users", tags=["Users"])
+api_router.include_router(audit.router, prefix="/audit-logs", tags=["Audit"])
+api_router.include_router(dashboard.router, prefix="/dashboard", tags=["Dashboard"])
 api_router.include_router(ai.router, prefix="/ai", tags=["Cognitive Router"])
 api_router.include_router(
     feedback.router, prefix="/feedback", tags=["AI Feedback"]

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settings &amp; Profile | Luminous</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+        }
+        .ghost-border {
+            outline: 1px solid rgba(199, 196, 215, 0.1);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        .mono {
+            font-family: 'JetBrains+Mono', monospace;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-surface": "#191c1e",
+                        "surface": "#f7f9fb",
+                        "on-secondary-container": "#494b83",
+                        "inverse-primary": "#c0c1ff",
+                        "tertiary-fixed-dim": "#ffb783",
+                        "outline-variant": "#c7c4d7",
+                        "primary-container": "#6063ee",
+                        "primary": "#4648d4",
+                        "surface-dim": "#d8dadc",
+                        "secondary-container": "#bdbefe",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "inverse-surface": "#2d3133",
+                        "secondary": "#575992",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#301400",
+                        "on-secondary-fixed-variant": "#404178",
+                        "on-tertiary-fixed-variant": "#703700",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-primary-fixed": "#07006c",
+                        "tertiary": "#904900",
+                        "surface-container-high": "#e6e8ea",
+                        "on-tertiary-container": "#fffbff",
+                        "background": "#f7f9fb",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#e1e0ff",
+                        "error": "#ba1a1a",
+                        "outline": "#767586",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e0e3e5",
+                        "surface-container": "#eceef0",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#e1e0ff",
+                        "on-primary-container": "#fffbff",
+                        "on-secondary-fixed": "#13144a",
+                        "surface-container-low": "#f2f4f6",
+                        "inverse-on-surface": "#eff1f3",
+                        "tertiary-container": "#b55d00",
+                        "on-primary": "#ffffff",
+                        "on-surface-variant": "#464554",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "tertiary-fixed": "#ffdcc5",
+                        "surface-bright": "#f7f9fb",
+                        "on-background": "#191c1e",
+                        "surface-tint": "#494bd6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<!-- Top Navigation Shell -->
+<nav class="sticky top-0 w-full z-40 bg-white/10 backdrop-blur-2xl shadow-[0px_4px_12px_rgba(25,28,30,0.04)] h-16 flex justify-between items-center px-8">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tighter text-indigo-600 font-['Inter']">Luminous</span>
+<div class="hidden md:flex gap-6 items-center">
+<a class="text-slate-500 hover:bg-slate-100/50 transition-colors px-3 py-1 rounded-full text-sm" href="#">Dashboard</a>
+<a class="text-slate-500 hover:bg-slate-100/50 transition-colors px-3 py-1 rounded-full text-sm" href="#">Projects</a>
+<a class="text-indigo-600 font-semibold text-sm" href="#">Settings</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-slate-100/50 rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant/20">
+<img alt="User avatar" class="h-full w-full object-cover" data-alt="close-up portrait of a professional woman with a soft confident expression in a bright modern studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKU5gzE5URsARhD3P2PdyC54d-ItTrErL9nnykLAGAe7Oxdu2A-4XeI3EJFIgHw28GA-KsA7Qnj2u4WRisTHu9ks-C1XpLU6R_Q4BEbm7Anug3pfSs3ap6FJKngIIIYK8miEzQd24wmjsYMTT5Bm0McWvrX92nIFditqwuA0qYmvGu_YoyNeWVI5e3JXPFjG3BJ8hxNQ4UrXtpkVPeJC-49N4D1XYVQ95vQkMRx-usDcohoVCiTxT8IpVpz9bCzlR3t5k8KqjlF74O"/>
+</div>
+</div>
+</nav>
+<main class="max-w-7xl mx-auto flex min-h-[calc(100vh-4rem)]">
+<!-- Sidebar Navigation -->
+<aside class="w-64 flex-shrink-0 bg-slate-50/50 py-8 px-4 flex flex-col gap-y-6">
+<div class="px-4 mb-4">
+<h2 class="text-xs font-bold tracking-[0.05em] uppercase text-slate-400 mb-6">Account Settings</h2>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-indigo-600 font-bold border-r-2 border-indigo-600 bg-indigo-50/50 text-sm transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="person">person</span>
+                        General
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-indigo-500 hover:translate-x-1 duration-300 text-sm" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="security">security</span>
+                        Security
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-indigo-500 hover:translate-x-1 duration-300 text-sm" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="payments">payments</span>
+                        Billing
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-indigo-500 hover:translate-x-1 duration-300 text-sm" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
+                        Notifications
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-indigo-500 hover:translate-x-1 duration-300 text-sm" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="api">api</span>
+                        Integrations
+                    </a>
+</nav>
+</div>
+</aside>
+<!-- Content Area -->
+<section class="flex-grow p-12 bg-surface">
+<!-- Header Section -->
+<div class="mb-12 flex items-end justify-between">
+<div class="flex items-center gap-6">
+<div class="relative group">
+<div class="h-24 w-24 rounded-full overflow-hidden shadow-xl ring-4 ring-white">
+<img alt="User avatar" class="h-full w-full object-cover" data-alt="professional headshot of a woman with short hair wearing a minimalist white shirt against a neutral grey background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7V9cMGHUSi_QbjIS1PDK9KaQcUcur8t18SwOAZ_iQuAeDdopOvks42hGn8bYbpvWjUiO55GrVaKo2b_slsCytdNbwqP5s5tTbwAODmODvBuICRJba3xvOeRSgCuG3xYmoWNb57nNz0k__mJ4J6SLXRFjXMg8H7M_sUDyLcuAIIvPPhkZrj0daBMU__sbkODA26NHKbjS3_st4GtZDSx4pIMpzp178dM5UOA8s5IcAjaji30ARCna-nRSRfIr3cdIyTZ_vRUl9_V1U"/>
+</div>
+<button class="absolute bottom-0 right-0 bg-primary p-2 rounded-full text-white shadow-lg scale-90 hover:scale-100 transition-transform">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+</div>
+<div>
+<h1 class="text-4xl font-extrabold tracking-tight text-on-surface mb-1">Alexandria Vance</h1>
+<div class="flex items-center gap-3">
+<span class="bg-indigo-100 text-indigo-700 px-3 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase">Pro Plan</span>
+<span class="text-slate-400 text-sm flex items-center gap-1 leading-none">
+<span class="material-symbols-outlined text-[14px]" data-icon="verified">verified</span>
+                                Enterprise Member
+                            </span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<span class="mono text-[10px] text-slate-400 block mb-1">ID: LUX-7729-BN</span>
+<button class="text-sm font-semibold text-primary hover:underline px-2 py-1 transition-all">View Public Profile</button>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-8">
+<!-- Main Form Column -->
+<div class="col-span-8 space-y-8">
+<!-- General Information -->
+<div class="bg-surface-container-lowest p-8 rounded-full ghost-border">
+<h3 class="text-lg font-bold mb-6 flex items-center gap-2">
+                            General Information
+                        </h3>
+<div class="grid grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">Full Name</label>
+<input class="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/20 text-sm transition-all" type="text" value="Alexandria Vance"/>
+</div>
+<div class="space-y-2">
+<label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">Email Address</label>
+<input class="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/20 text-sm transition-all" type="email" value="alexandria.v@luminous.io"/>
+</div>
+<div class="col-span-2 space-y-2">
+<label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 ml-1">Professional Bio</label>
+<textarea class="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/20 text-sm transition-all" rows="3">Curating digital experiences at the intersection of design and data. Lead strategist for Luminous Enterprise.</textarea>
+</div>
+</div>
+</div>
+<!-- Preferences -->
+<div class="bg-surface-container-lowest p-8 rounded-full ghost-border">
+<h3 class="text-lg font-bold mb-6">Preferences</h3>
+<div class="space-y-6">
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-xl">
+<div>
+<p class="font-semibold text-sm">Enhanced Privacy Mode</p>
+<p class="text-xs text-slate-500 mt-0.5">Mask your identity during shared collaborative sessions.</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-xl">
+<div>
+<p class="font-semibold text-sm">Auto-Save Research</p>
+<p class="text-xs text-slate-500 mt-0.5">Automatically persist curator drafts every 2 minutes.</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+<!-- Data Retention -->
+<div class="bg-surface-container-low p-8 rounded-full ghost-border">
+<h3 class="text-lg font-bold mb-2">Data Retention</h3>
+<p class="text-sm text-slate-500 mb-6">Choose how long Luminous should store your analytical insights.</p>
+<div class="grid grid-cols-3 gap-4">
+<label class="relative cursor-pointer">
+<input class="sr-only peer" name="retention" type="radio" value="30"/>
+<div class="p-4 bg-surface-container-lowest rounded-xl border-2 border-transparent peer-checked:border-primary peer-checked:bg-indigo-50/50 transition-all text-center">
+<span class="mono text-lg font-bold text-primary block">30</span>
+<span class="text-[10px] font-bold uppercase text-slate-400">Days</span>
+</div>
+</label>
+<label class="relative cursor-pointer">
+<input checked="" class="sr-only peer" name="retention" type="radio" value="90"/>
+<div class="p-4 bg-surface-container-lowest rounded-xl border-2 border-transparent peer-checked:border-primary peer-checked:bg-indigo-50/50 transition-all text-center">
+<span class="mono text-lg font-bold text-primary block">90</span>
+<span class="text-[10px] font-bold uppercase text-slate-400">Days</span>
+</div>
+</label>
+<label class="relative cursor-pointer">
+<input class="sr-only peer" name="retention" type="radio" value="inf"/>
+<div class="p-4 bg-surface-container-lowest rounded-xl border-2 border-transparent peer-checked:border-primary peer-checked:bg-indigo-50/50 transition-all text-center">
+<span class="material-symbols-outlined text-primary block mb-1" data-icon="all_inclusive">all_inclusive</span>
+<span class="text-[10px] font-bold uppercase text-slate-400">Forever</span>
+</div>
+</label>
+</div>
+</div>
+</div>
+<!-- Secondary Column (Info/Actions) -->
+<div class="col-span-4 space-y-6">
+<!-- Billing Status Glass Card -->
+<div class="glass-panel p-6 rounded-full border border-white/20 shadow-xl overflow-hidden relative">
+<div class="absolute -top-12 -right-12 w-32 h-32 bg-indigo-500/10 blur-3xl rounded-full"></div>
+<h4 class="text-xs font-bold uppercase tracking-[0.1em] text-indigo-600 mb-4">Billing Health</h4>
+<div class="flex items-center gap-4 mb-6">
+<div class="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="credit_score">credit_score</span>
+</div>
+<div>
+<p class="text-sm font-bold">Visa ending in 8842</p>
+<p class="text-[11px] text-slate-500">Next billing: Oct 12, 2023</p>
+</div>
+</div>
+<div class="space-y-3">
+<div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[85%] rounded-full"></div>
+</div>
+<div class="flex justify-between text-[11px] mono">
+<span class="text-slate-500">Usage Limit</span>
+<span class="text-primary font-bold">850/1000 GB</span>
+</div>
+</div>
+<button class="w-full mt-6 py-3 bg-gradient-to-br from-primary to-primary-container text-white text-xs font-bold rounded-xl shadow-lg shadow-indigo-200 hover:scale-[1.02] active:scale-95 transition-all">
+                            Manage Subscription
+                        </button>
+</div>
+<!-- Account Security Quick Actions -->
+<div class="bg-surface-container-high p-6 rounded-full">
+<h4 class="text-xs font-bold uppercase tracking-[0.1em] text-slate-500 mb-4">Security Overview</h4>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-emerald-500 text-sm" data-icon="check_circle">check_circle</span>
+<span class="text-xs">2FA Enabled via Auth App</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-amber-500 text-sm" data-icon="warning">warning</span>
+<span class="text-xs">Recovery key not backed up</span>
+</div>
+</div>
+<hr class="my-5 border-slate-300/30"/>
+<button class="text-[11px] font-bold text-slate-600 hover:text-primary transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="refresh">refresh</span>
+                            Change Password
+                        </button>
+</div>
+<!-- Support Widget -->
+<div class="p-6 rounded-full border border-indigo-100 bg-white shadow-sm flex items-center gap-4">
+<div class="flex -space-x-3">
+<img class="h-8 w-8 rounded-full border-2 border-white object-cover" data-alt="support specialist portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuACms550CpdPJrA5wII7b7LKqNWPGChKeRpMboL8Gx-jd0FCuYGVZEkQA1n-HPwEAU9OUg1BFmI-BOVOHvuigjcgmMlNXQGpo0MJC45oVQ-Daojc36_rSItbCBavfdrJn1dBjfYWiWRxn_zySFnUV8oDRd_CIJCj4-LTG4aJodI0Idh-R0uJLszpWJsFuPxGtpFQ2jBm6v-oOzErqMh6_4PGEqE9C1_A6Rgdqs04MJSTTNGuOV1tGHtGCN8JDc_ZIa8Rjl_JFTLiUvW"/>
+<img class="h-8 w-8 rounded-full border-2 border-white object-cover" data-alt="it specialist portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0OyP9XMdTGo-ggztueh9XH-wU7Gy4_SPtdNMhIbpvTo3_iofrOzWwupdM1juUJWckWYnmDujHiIowQBlAvxTqJ3tXB76JT1FDX8G9aNxtxptVwkJP8owaZFAYCLyOS4P3J50D55A3VP1SCInMa9AhG-VThjOnWDnf3t2eFh5vhfQ7vY2qGojrwkdJEHuHF0DJgjZ3acrdSpf5qk7a25X5AvtHRlbqGLHLAxcvrtzDLeMBmctKK1vJNJ407-p9OFrK87315ZOS6TEv"/>
+</div>
+<div class="flex-grow">
+<p class="text-xs font-bold">Curator Concierge</p>
+<p class="text-[10px] text-slate-400">Available 24/7 for Pro members</p>
+</div>
+<button class="p-2 bg-slate-50 rounded-full hover:bg-slate-100 transition-colors">
+<span class="material-symbols-outlined text-slate-600 text-[18px]" data-icon="chat_bubble">chat_bubble</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Footer Action Bar -->
+<div class="mt-12 pt-8 flex items-center justify-between border-t border-slate-200/50">
+<button class="text-sm font-semibold text-error hover:bg-error/5 px-4 py-2 rounded-xl transition-all">
+                    Deactivate Account
+                </button>
+<div class="flex gap-4">
+<button class="px-6 py-2.5 text-sm font-semibold text-slate-500 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all">
+                        Cancel
+                    </button>
+<button class="px-8 py-2.5 text-sm font-bold text-white bg-primary rounded-xl shadow-lg shadow-indigo-100 hover:scale-[1.02] active:scale-95 transition-all">
+                        Save Changes
+                    </button>
+</div>
+</div>
+</section>
+</main>
+</body></html>

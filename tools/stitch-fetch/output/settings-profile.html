@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settings &amp; Profile | Ambient Intelligence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(11, 19, 38, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        .ghost-border {
+            border: 1px solid rgba(144, 143, 160, 0.1);
+        }
+        .indigo-glow:focus-within {
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.4);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#283044",
+                        "surface-tint": "#c0c1ff",
+                        "surface-bright": "#31394d",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "tertiary": "#ffb783",
+                        "outline": "#908fa0",
+                        "surface-container-highest": "#2d3449",
+                        "primary-fixed": "#e1e0ff",
+                        "error": "#ffb4ab",
+                        "tertiary-container": "#d97721",
+                        "secondary-container": "#42447b",
+                        "on-secondary": "#292a60",
+                        "surface-dim": "#0b1326",
+                        "on-primary-fixed": "#07006c",
+                        "surface-container-high": "#222a3d",
+                        "primary": "#c0c1ff",
+                        "surface-container-low": "#131b2e",
+                        "surface-container": "#171f33",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#703700",
+                        "on-tertiary-fixed": "#301400",
+                        "outline-variant": "#464554",
+                        "on-primary-container": "#0d0096",
+                        "inverse-primary": "#494bd6",
+                        "tertiary-fixed": "#ffdcc5",
+                        "on-surface": "#dae2fd",
+                        "on-background": "#dae2fd",
+                        "on-secondary-fixed": "#13144a",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "on-secondary-container": "#b2b3f2",
+                        "on-primary": "#1000a9",
+                        "on-secondary-fixed-variant": "#404178",
+                        "primary-container": "#8083ff",
+                        "secondary": "#c0c1ff",
+                        "inverse-surface": "#dae2fd",
+                        "surface-variant": "#2d3449",
+                        "surface-container-lowest": "#060e20",
+                        "surface": "#0b1326",
+                        "on-tertiary": "#4f2500",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#ffb783",
+                        "on-tertiary-container": "#452000",
+                        "secondary-fixed": "#e1e0ff",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "on-surface-variant": "#c7c4d7",
+                        "background": "#0b1326",
+                        "on-error": "#690005"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"],
+                        "mono": ["JetBrains Mono"]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary/30">
+<!-- Global Layout Wrapper -->
+<div class="flex min-h-screen">
+<!-- SideNavBar Component (Shared) -->
+<aside class="fixed left-0 top-0 h-full w-64 border-r border-[#dae2fd]/10 bg-surface/80 dark:bg-[#0b1326]/80 backdrop-blur-xl flex flex-col py-8 px-4 z-50">
+<div class="mb-10 px-4">
+<span class="text-xl font-bold tracking-tighter text-[#c0c1ff]">Enterprise Admin</span>
+<p class="text-[10px] uppercase tracking-widest text-[#dae2fd]/40 mt-1">Premium Tier</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-[#dae2fd]/60 font-medium hover:bg-[#dae2fd]/5 hover:text-[#dae2fd] transition-all duration-300 rounded-xl group" href="#">
+<span class="material-symbols-outlined text-xl">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#dae2fd]/60 font-medium hover:bg-[#dae2fd]/5 hover:text-[#dae2fd] transition-all duration-300 rounded-xl group" href="#">
+<span class="material-symbols-outlined text-xl">insights</span>
+<span>Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#dae2fd]/60 font-medium hover:bg-[#dae2fd]/5 hover:text-[#dae2fd] transition-all duration-300 rounded-xl group" href="#">
+<span class="material-symbols-outlined text-xl">account_tree</span>
+<span>Projects</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#dae2fd]/60 font-medium hover:bg-[#dae2fd]/5 hover:text-[#dae2fd] transition-all duration-300 rounded-xl group" href="#">
+<span class="material-symbols-outlined text-xl">group</span>
+<span>Team</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#c0c1ff] bg-[#8083ff]/10 font-semibold rounded-xl group" href="#">
+<span class="material-symbols-outlined text-xl">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<div class="mt-auto space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-[#dae2fd]/60 font-medium hover:bg-[#dae2fd]/5 hover:text-[#dae2fd] transition-all duration-300 rounded-xl" href="#">
+<span class="material-symbols-outlined text-xl">help_outline</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#dae2fd]/60 font-medium hover:bg-[#dae2fd]/5 hover:text-[#dae2fd] transition-all duration-300 rounded-xl" href="#">
+<span class="material-symbols-outlined text-xl">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-64 min-h-screen flex flex-col bg-surface relative">
+<!-- TopNavBar Component (Shared) -->
+<header class="sticky top-0 w-full z-40 bg-surface/60 dark:bg-[#0b1326]/60 backdrop-blur-md border-b border-[#dae2fd]/10 h-16 px-8 flex justify-between items-center">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#dae2fd]/40 text-lg">search</span>
+<input class="w-full bg-surface-container-lowest border-none rounded-xl pl-10 pr-4 py-2 text-sm text-on-surface focus:ring-1 focus:ring-primary/40 placeholder:text-[#dae2fd]/30" placeholder="Search system settings..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="relative text-[#dae2fd]/70 hover:text-[#c0c1ff] transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-primary rounded-full"></span>
+</button>
+<button class="text-[#dae2fd]/70 hover:text-[#c0c1ff] transition-colors">
+<span class="material-symbols-outlined">dns</span>
+</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-primary/20">
+<img class="w-full h-full object-cover" data-alt="professional headshot of a creative director in a dark studio setting with cinematic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMe_ABOYxGCuCkhPgjfSvIkpziZnk_5GXSjmKVC8W_iNjTCZ2mpUpju80L8Obp8_Xu__K6HHoVonny_0EyqOAOWF6x_iWBqbeuUEHWsJdgHXkOE5AOtN-XAI63v1X4TFmUNSjEk8unPTouZH6Pwe1hyRjIzKaK7Katkt9_EYIBb6dX18bG_msNq3GfHacvg7rlmTBEgUgU0PHMEEtZLoVAPV7X_3nT5gXwQay5brxOotqtfRJZUJ80Wdta-L3wRuqT7zfkxE9H2QMP"/>
+</div>
+</div>
+</header>
+<!-- Settings Canvas -->
+<div class="p-12 max-w-7xl mx-auto w-full">
+<!-- Profile Header Card -->
+<div class="mb-12 relative overflow-hidden rounded-2xl bg-surface-container-low ghost-border p-8 flex items-center gap-8">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+<div class="relative">
+<div class="w-24 h-24 rounded-2xl overflow-hidden border-2 border-primary/20 p-1 bg-surface">
+<img class="w-full h-full object-cover rounded-xl" data-alt="professional headshot of a creative director in a dark studio setting with cinematic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEY0rr2OPNNHU692WaEVKMvvGjdacCR89O0xdfpIvqzNzG8pBA9E0Ih2l6rxdzPXRnKP8Z4UdKgeWhiXT425TtdoHf1WrM7K7z6yCAAwHClH3eFr04LFgMbHzL9NlGm_tUYGip3DGzBG_P4g-S6y-uU9vhoKZzo1eo7xWE3VDm-CivHsNE8PwtyD0fLOilXlTCa82c1TdNoMLA0xhR1psCgLaKIZ2bIOsNACGNwtn3mUTL0hZxZsxlcEm6kRGlGEmjhDcEZBItZ2YM"/>
+</div>
+<button class="absolute -bottom-2 -right-2 bg-primary text-on-primary-container p-2 rounded-lg shadow-lg hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">edit</span>
+</button>
+</div>
+<div class="flex-1">
+<h1 class="text-3xl font-bold tracking-tight text-on-surface">Alexander Sterling</h1>
+<p class="text-on-surface-variant font-mono text-sm">sterling.admin@ambient-intel.ai</p>
+<div class="flex gap-4 mt-4">
+<div class="px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-xs font-semibold text-primary">Enterprise Plan</div>
+<div class="px-3 py-1 bg-surface-container-highest border border-outline-variant/20 rounded-full text-xs font-medium text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">verified</span>
+                                Verified
+                            </div>
+</div>
+</div>
+<div class="hidden lg:block text-right">
+<p class="text-xs text-on-surface-variant uppercase tracking-widest mb-1">Billing Period</p>
+<p class="text-lg font-bold text-on-surface">Renewing in 14 days</p>
+<button class="mt-2 text-primary text-sm font-medium hover:underline">Manage Subscription</button>
+</div>
+</div>
+<!-- Settings Grid -->
+<div class="grid grid-cols-12 gap-12">
+<!-- Left Sub-Nav -->
+<div class="col-span-12 md:col-span-3 space-y-2">
+<h2 class="text-xs font-bold uppercase tracking-[0.2em] text-on-surface-variant mb-6 px-4">System Settings</h2>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary font-semibold rounded-xl border-l-2 border-primary transition-all" href="#">
+<span class="material-symbols-outlined">person_outline</span>
+                            General
+                        </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">security</span>
+                            Security
+                        </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">payments</span>
+                            Billing
+                        </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">group_add</span>
+                            Team
+                        </a>
+<div class="pt-8">
+<h2 class="text-xs font-bold uppercase tracking-[0.2em] text-on-surface-variant mb-6 px-4">Advanced</h2>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">terminal</span>
+                                API Keys
+                            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">webhook</span>
+                                Webhooks
+                            </a>
+</div>
+</div>
+<!-- Main Settings Forms -->
+<div class="col-span-12 md:col-span-9 space-y-12 pb-24">
+<!-- General Info Section -->
+<section>
+<div class="mb-6">
+<h3 class="text-xl font-bold text-on-surface">General Information</h3>
+<p class="text-on-surface-variant text-sm mt-1">Update your personal details and public presence.</p>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div class="col-span-2 md:col-span-1 flex flex-col gap-2">
+<label class="text-xs font-medium text-on-surface-variant ml-1">Display Name</label>
+<div class="indigo-glow transition-all rounded-xl">
+<input class="w-full bg-surface-container-lowest border border-outline-variant/10 rounded-xl px-4 py-3 text-on-surface focus:ring-0 focus:border-primary/40 placeholder:text-on-surface-variant/30 font-body" type="text" value="Alexander Sterling"/>
+</div>
+</div>
+<div class="col-span-2 md:col-span-1 flex flex-col gap-2">
+<label class="text-xs font-medium text-on-surface-variant ml-1">Role Title</label>
+<div class="indigo-glow transition-all rounded-xl">
+<input class="w-full bg-surface-container-lowest border border-outline-variant/10 rounded-xl px-4 py-3 text-on-surface focus:ring-0 focus:border-primary/40 placeholder:text-on-surface-variant/30 font-body" type="text" value="Lead Systems Architect"/>
+</div>
+</div>
+<div class="col-span-2 flex flex-col gap-2">
+<label class="text-xs font-medium text-on-surface-variant ml-1">Bio</label>
+<div class="indigo-glow transition-all rounded-xl">
+<textarea class="w-full bg-surface-container-lowest border border-outline-variant/10 rounded-xl px-4 py-3 text-on-surface focus:ring-0 focus:border-primary/40 placeholder:text-on-surface-variant/30 font-body" rows="4">Focusing on high-availability cloud infrastructure and ambient computing neural networks. Principal at Ambient Intelligence.</textarea>
+</div>
+</div>
+</div>
+</section>
+<!-- Preferences / Toggles Section -->
+<section>
+<div class="mb-6">
+<h3 class="text-xl font-bold text-on-surface">Preferences</h3>
+<p class="text-on-surface-variant text-sm mt-1">Configure how you interact with the environment.</p>
+</div>
+<div class="bg-surface-container-low rounded-2xl ghost-border overflow-hidden">
+<div class="p-6 flex items-center justify-between border-b border-outline-variant/5">
+<div>
+<p class="font-semibold text-on-surface">Real-time Notifications</p>
+<p class="text-sm text-on-surface-variant">Receive instant push alerts for critical events.</p>
+</div>
+<button class="w-12 h-6 bg-primary rounded-full relative transition-colors">
+<span class="absolute right-1 top-1 w-4 h-4 bg-on-primary rounded-full"></span>
+</button>
+</div>
+<div class="p-6 flex items-center justify-between border-b border-outline-variant/5">
+<div>
+<p class="font-semibold text-on-surface">Developer Mode</p>
+<p class="text-sm text-on-surface-variant">Expose technical IDs and raw JSON logs in the UI.</p>
+</div>
+<button class="w-12 h-6 bg-surface-container-highest rounded-full relative transition-colors">
+<span class="absolute left-1 top-1 w-4 h-4 bg-outline rounded-full"></span>
+</button>
+</div>
+<div class="p-6 flex items-center justify-between">
+<div>
+<p class="font-semibold text-on-surface">Data Anonymization</p>
+<p class="text-sm text-on-surface-variant">Automatically scrub PII from shared project logs.</p>
+</div>
+<button class="w-12 h-6 bg-primary rounded-full relative transition-colors">
+<span class="absolute right-1 top-1 w-4 h-4 bg-on-primary rounded-full"></span>
+</button>
+</div>
+</div>
+</section>
+<!-- Radio Selection Section -->
+<section>
+<div class="mb-6">
+<h3 class="text-xl font-bold text-on-surface">Data Retention</h3>
+<p class="text-on-surface-variant text-sm mt-1">Set the archival threshold for project telemetry.</p>
+</div>
+<div class="grid grid-cols-3 gap-4">
+<label class="cursor-pointer group">
+<input checked="" class="hidden peer" name="retention" type="radio"/>
+<div class="p-4 rounded-xl bg-surface-container-low ghost-border peer-checked:border-primary/60 peer-checked:bg-primary/5 transition-all flex flex-col gap-2">
+<div class="flex justify-between items-center">
+<span class="text-sm font-bold text-on-surface">30 Days</span>
+<div class="w-4 h-4 rounded-full border border-outline-variant peer-checked:border-primary flex items-center justify-center">
+<div class="w-2 h-2 bg-primary rounded-full opacity-0 peer-checked:opacity-100"></div>
+</div>
+</div>
+<p class="text-xs text-on-surface-variant">Standard archival for non-critical logs.</p>
+</div>
+</label>
+<label class="cursor-pointer group">
+<input class="hidden peer" name="retention" type="radio"/>
+<div class="p-4 rounded-xl bg-surface-container-low ghost-border peer-checked:border-primary/60 peer-checked:bg-primary/5 transition-all flex flex-col gap-2">
+<div class="flex justify-between items-center">
+<span class="text-sm font-bold text-on-surface">90 Days</span>
+<div class="w-4 h-4 rounded-full border border-outline-variant peer-checked:border-primary flex items-center justify-center">
+<div class="w-2 h-2 bg-primary rounded-full opacity-0 peer-checked:opacity-100"></div>
+</div>
+</div>
+<p class="text-xs text-on-surface-variant">Recommended for professional teams.</p>
+</div>
+</label>
+<label class="cursor-pointer group">
+<input class="hidden peer" name="retention" type="radio"/>
+<div class="p-4 rounded-xl bg-surface-container-low ghost-border peer-checked:border-primary/60 peer-checked:bg-primary/5 transition-all flex flex-col gap-2">
+<div class="flex justify-between items-center">
+<span class="text-sm font-bold text-on-surface">Unlimited</span>
+<div class="w-4 h-4 rounded-full border border-outline-variant peer-checked:border-primary flex items-center justify-center">
+<div class="w-2 h-2 bg-primary rounded-full opacity-0 peer-checked:opacity-100"></div>
+</div>
+</div>
+<p class="text-xs text-on-surface-variant">Requires Enterprise Storage add-on.</p>
+</div>
+</label>
+</div>
+</section>
+<!-- Footer Action Bar (Asymmetric) -->
+<div class="flex items-center justify-end gap-4 pt-12 mt-12 border-t border-outline-variant/10">
+<button class="px-8 py-3 rounded-xl font-semibold glass-panel ghost-border text-on-surface hover:bg-surface-container-high transition-all">
+                                Cancel
+                            </button>
+<button class="px-10 py-3 rounded-xl font-bold bg-gradient-to-r from-primary to-primary-container text-on-primary-fixed shadow-[0px_4px_20px_rgba(192,193,255,0.2)] hover:shadow-[0px_4px_25px_rgba(192,193,255,0.4)] hover:scale-[1.02] transition-all">
+                                Save Changes
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Background Aesthetic Elements -->
+<div class="fixed top-0 right-0 -z-10 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] -mr-96 -mt-96 pointer-events-none"></div>
+<div class="fixed bottom-0 left-0 -z-10 w-[600px] h-[600px] bg-tertiary/5 rounded-full blur-[100px] -ml-64 -mb-64 pointer-events-none"></div>
+</main>
+</div>
+</body></html>

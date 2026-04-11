@@ -182,10 +182,11 @@ export default function AIPoliciesPage() {
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-fluid-h2 font-bold tracking-tight text-foreground">
-            AI Policies
+            Policies &amp; tools
           </h1>
           <p className="mt-1 text-muted-foreground">
-            Define how the AI assistant and automation are allowed to behave.
+            Guardrails, tool access, and natural-language rules for every deployed
+            agent.
           </p>
         </div>
         <Button

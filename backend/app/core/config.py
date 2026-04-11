@@ -71,13 +71,13 @@ class Settings(BaseSettings):
 
     # Native JWT signing (accept legacy SUPABASE_JWT_SECRET env name for existing deployments)
     JWT_SECRET: str = Field(
-        ...,
+        default="change-me-in-production-min-32-chars",
         validation_alias=AliasChoices("JWT_SECRET", "SUPABASE_JWT_SECRET", "AUTH_SECRET"),
     )
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
 
-    # AI Configuration
-    GEMINI_API_KEY: str
+    # AI Configuration (empty until set; required for embeddings / agent features)
+    GEMINI_API_KEY: str = Field(default="")
     GEMINI_TEACHER_MODEL: str = Field(
         default="gemini-2.5-pro",
         description="Higher-reasoning model for nightly policy synthesis (Phase D).",

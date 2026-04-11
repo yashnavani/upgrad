@@ -139,9 +139,12 @@ export default function ApprovalsPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-8 duration-500 animate-in fade-in">
       <div>
-        <h1 className="text-fluid-h2 font-bold tracking-tight">Pending Actions</h1>
+        <h1 className="text-fluid-h2 font-bold tracking-tight text-foreground">
+          Human approvals
+        </h1>
         <p className="mt-1 text-muted-foreground">
-          Review agentic proposals before any high-impact automation runs.
+          Review high-impact agent proposals before they run in a client
+          workspace.
         </p>
       </div>
 
