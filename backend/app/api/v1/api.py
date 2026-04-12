@@ -9,7 +9,9 @@ from app.api.v1.endpoints import (
     decisions,
     feedback,
     files,
+    health,
     items,
+    metrics,
     policies,
     realtime,
     reports,
@@ -19,6 +21,7 @@ from app.api.v1.endpoints import (
 
 api_router = APIRouter()
 
+api_router.include_router(health.router, tags=["System"])
 api_router.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 api_router.include_router(users.router, prefix="/users", tags=["Users"])
 api_router.include_router(audit.router, prefix="/audit-logs", tags=["Audit"])
@@ -42,3 +45,4 @@ api_router.include_router(
 api_router.include_router(
     realtime.router, prefix="/realtime", tags=["Real-Time Bus"]
 )
+api_router.include_router(metrics.router, tags=["Monitoring"])

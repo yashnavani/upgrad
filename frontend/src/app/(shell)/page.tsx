@@ -134,7 +134,7 @@ export default function Home() {
 
   return (
     <motion.div
-      className="mx-auto max-w-6xl space-y-10 py-6"
+      className="mx-auto max-w-6xl space-y-10 py-6 pb-24"
       variants={containerVariants}
       initial="hidden"
       animate="show"

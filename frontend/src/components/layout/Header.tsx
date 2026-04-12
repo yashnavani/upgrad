@@ -61,11 +61,11 @@ export function Header() {
         </h1>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <Button
           variant="outline"
           onClick={() => setCommandOpen(true)}
-          className="hidden w-64 items-center justify-start gap-2 border-border/50 bg-muted/20 text-muted-foreground transition-colors hover:border-primary/50 sm:flex"
+          className="hidden w-48 items-center justify-start gap-2 border-border/50 bg-muted/20 text-muted-foreground transition-colors hover:border-primary/50 lg:w-64 lg:flex"
         >
           <Search className="h-4 w-4" />
           <span className="flex-1 text-left text-xs font-normal">
@@ -79,7 +79,7 @@ export function Header() {
         <Button
           variant="default"
           onClick={() => setAIOpen(true)}
-          className="hidden items-center gap-2 rounded-full bg-primary px-4 text-white shadow-sm hover:bg-primary/90 sm:flex"
+          className="hidden items-center gap-2 rounded-full bg-primary px-3 py-2 text-white shadow-sm hover:bg-primary/90 lg:flex lg:px-4"
         >
           <BrainCircuit className="h-4 w-4" />
           <span className="text-xs font-semibold">Agent panel</span>

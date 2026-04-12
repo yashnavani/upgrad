@@ -29,8 +29,20 @@ class Settings(BaseSettings):
     )
 
     PROJECT_NAME: str = "Master Foundation"
-    ENVIRONMENT: Literal["development", "staging", "production"] = "development"
+    ENVIRONMENT: Literal["development", "staging", "production", "testing"] = "development"
     API_V1_STR: str = "/api/v1"
+    
+    @field_validator("ENVIRONMENT", mode="after")
+    @classmethod
+    def validate_production_settings(cls, v: str, info) -> str:
+        """Ensure production environment has secure settings."""
+        if v == "production":
+            jwt_secret = info.data.get("JWT_SECRET", "")
+            if jwt_secret == "change-me-in-production-min-32-chars":
+                raise ValueError("JWT_SECRET must be changed in production environment")
+            if len(jwt_secret) < 32:
+                raise ValueError("JWT_SECRET must be at least 32 characters in production")
+        return v
 
     # Database Settings
     POSTGRES_SERVER: str
