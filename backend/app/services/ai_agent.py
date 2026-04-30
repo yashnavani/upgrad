@@ -1,7 +1,7 @@
 # backend/app/services/ai_agent.py
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -68,9 +68,8 @@ def _create_master_agent() -> Agent:
         Gets the current server system time in UTC.
         Use this if the user asks what time it is, or needs a timestamp.
         """
-        from datetime import datetime
 
-        current_time = datetime.now(timezone.utc).isoformat()
+        current_time = datetime.now(UTC).isoformat()
         logger.info("AI Tool Executed: get_system_time")
         return f"The current system time in UTC is {current_time}"
 

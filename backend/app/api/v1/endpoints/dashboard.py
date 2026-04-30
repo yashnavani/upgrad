@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import case, cast, func, select
@@ -17,9 +17,9 @@ router = APIRouter()
 
 
 def _weekday_labels() -> list[datetime]:
-    today = datetime.now(timezone.utc).date()
+    today = datetime.now(UTC).date()
     return [
-        datetime.combine(today - timedelta(days=i), datetime.min.time(), tzinfo=timezone.utc)
+        datetime.combine(today - timedelta(days=i), datetime.min.time(), tzinfo=UTC)
         for i in range(6, -1, -1)
     ]
 
@@ -30,10 +30,7 @@ def _rows_to_chart_days(rows: list) -> list[ChartDay]:
         d = m["day"]
         if d is None:
             continue
-        if hasattr(d, "date"):
-            key = d.date().isoformat()
-        else:
-            key = str(d)[:10]
+        key = d.date().isoformat() if hasattr(d, "date") else str(d)[:10]
         by_day[key] = (int(m["requests"] or 0), int(m["ai_calls"] or 0))
 
     chart: list[ChartDay] = []
@@ -75,7 +72,10 @@ async def dashboard_metrics(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> DashboardMetrics:
-    """Aggregates for overview + chart. Superusers see org-wide totals; others see scoped metrics."""
+    """Aggregates for overview + chart.
+
+    Superusers see org-wide totals; others see scoped metrics.
+    """
     pa = await db.scalar(
         select(func.count())
         .select_from(Policy)
@@ -85,8 +85,8 @@ async def dashboard_metrics(
         select(func.count()).select_from(Policy).where(Policy.is_deleted.is_(False))
     )
 
-    since_24h = datetime.now(timezone.utc) - timedelta(hours=24)
-    since_7d = datetime.now(timezone.utc) - timedelta(days=7)
+    since_24h = datetime.now(UTC) - timedelta(hours=24)
+    since_7d = datetime.now(UTC) - timedelta(days=7)
 
     if not current_user.is_superuser:
         aid = str(current_user.id)
@@ -164,7 +164,7 @@ async def dashboard_insights(
     if not current_user.is_superuser:
         return []
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     since_24h = now - timedelta(hours=24)
     insights: list[InsightItem] = []
 
@@ -185,7 +185,10 @@ async def dashboard_insights(
                 severity="WARNING",
                 confidence="100%",
                 timestamp=now.isoformat(),
-                description="Agent proposals are queued until a superuser approves or rejects them in Agent Insights → Decisions.",
+                description=(
+                    "Agent proposals are queued until a superuser approves or rejects them "
+                    "in Agent Insights → Decisions."
+                ),
             )
         )
 
@@ -214,7 +217,10 @@ async def dashboard_insights(
                 severity="CRITICAL",
                 confidence="90%",
                 timestamp=now.isoformat(),
-                description=f"In the last 24 hours, {e24} of {t24} audited requests returned HTTP 5xx. Review run logs and upstream dependencies.",
+                description=(
+                    f"In the last 24 hours, {e24} of {t24} audited requests returned HTTP 5xx. "
+                    "Review run logs and upstream dependencies."
+                ),
             )
         )
 
@@ -235,7 +241,10 @@ async def dashboard_insights(
                 severity="WARNING",
                 confidence="85%",
                 timestamp=now.isoformat(),
-                description=f"Mean processing time for AI chat requests in the last 24h is {float(avg_ai_ms):.0f} ms. Consider model routing, timeouts, or backend load.",
+                description=(
+                    f"Mean processing time for AI chat requests in the last 24h is "
+                    f"{float(avg_ai_ms):.0f} ms. Consider model routing, timeouts, or backend load."
+                ),
             )
         )
 
@@ -253,7 +262,10 @@ async def dashboard_insights(
                 severity="WARNING",
                 confidence="100%",
                 timestamp=now.isoformat(),
-                description="There are zero active policies. Define guardrails under Policies & tools before exposing agents to clients.",
+                description=(
+                    "There are zero active policies. Define guardrails under Policies & tools "
+                    "before exposing agents to clients."
+                ),
             )
         )
 

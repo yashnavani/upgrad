@@ -97,7 +97,10 @@ class Settings(BaseSettings):
     LIVEAVATAR_USE_SANDBOX: bool = Field(default=True)
     LIVEAVATAR_SESSION_MODE: Literal["LITE", "FULL"] = Field(
         default="FULL",
-        description="FULL sends avatar_persona (voice_id, language); needed for studio voice + speak_text over LiveKit.",
+        description=(
+            "FULL sends avatar_persona (voice_id, language); needed for studio voice "
+            "and speak_text over LiveKit."
+        ),
     )
     LIVEAVATAR_LANGUAGE: str = Field(default="en")
     LIVEAVATAR_CONTEXT_ID: str = Field(

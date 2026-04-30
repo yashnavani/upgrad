@@ -74,7 +74,10 @@ async def test_update_item(auth_client: AsyncClient):
     created = (await auth_client.post(BASE, json={"title": "Original"})).json()
     item_id = created["id"]
 
-    response = await auth_client.patch(f"{BASE}/{item_id}", json={"title": "Updated", "status": "done"})
+    response = await auth_client.patch(
+        f"{BASE}/{item_id}",
+        json={"title": "Updated", "status": "done"},
+    )
     assert response.status_code == 200
     data = response.json()
     assert data["title"] == "Updated"
@@ -119,7 +122,10 @@ async def test_delete_item_not_owner(auth_client: AsyncClient, superuser_client:
 # ── Hard-delete (superuser only) ──────────────────────────────────────────────
 
 @pytest.mark.asyncio
-async def test_hard_delete_requires_superuser(auth_client: AsyncClient, superuser_client: AsyncClient):
+async def test_hard_delete_requires_superuser(
+    auth_client: AsyncClient,
+    superuser_client: AsyncClient,
+):
     created = (await superuser_client.post(BASE, json={"title": "Permanent Target"})).json()
     item_id = created["id"]
 

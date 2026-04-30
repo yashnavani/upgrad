@@ -2,8 +2,9 @@
 Retry utility for handling transient failures.
 """
 import asyncio
+from collections.abc import Callable
 from functools import wraps
-from typing import Any, Callable, TypeVar
+from typing import Any, TypeVar
 
 from app.core.logging_config import get_logger
 

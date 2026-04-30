@@ -60,3 +60,6 @@ ignore = [
 "alembic/env.py" = ["E501", "I001"]
 # Env must be set before importing `app` / `settings`
 "tests/conftest.py" = ["E402"]
+# PEP 695 generics optional; keep Generic[] for broad Python compatibility
+"app/utils/pagination.py" = ["UP046", "UP047"]
+"app/utils/crud.py" = ["UP046"]

@@ -5,10 +5,12 @@ Run: docker exec mf-backend python create_admin.py
 """
 import asyncio
 import sys
+
 from sqlalchemy import select
+
+from app.core.auth_service import get_password_hash
 from app.core.database import AsyncSessionLocal
 from app.models.user import User
-from app.core.auth_service import get_password_hash
 
 
 async def create_admin_user(
@@ -21,7 +23,7 @@ async def create_admin_user(
         # Check if user already exists
         result = await db.execute(select(User).where(User.email == email))
         existing = result.scalar_one_or_none()
-        
+
         if existing:
             print(f"⚠️  User with email {email} already exists!")
             # Update password and superuser status
@@ -31,10 +33,10 @@ async def create_admin_user(
             await db.commit()
             print(f"✅ Updated {email}:")
             print(f"   - Password reset to: {password}")
-            print(f"   - Superuser: True")
-            print(f"   - Active: True")
+            print("   - Superuser: True")
+            print("   - Active: True")
             return
-        
+
         # Create new admin user
         user = User(
             email=email,
@@ -46,17 +48,18 @@ async def create_admin_user(
         db.add(user)
         await db.commit()
         await db.refresh(user)
-        
-        print(f"✅ Admin user created successfully!")
+
+        print("✅ Admin user created successfully!")
         print(f"   Email: {email}")
         print(f"   Password: {password}")
         print(f"   Superuser: {user.is_superuser}")
-        print(f"\n✅ Open the app at http://localhost:3001 and go to /interview (no login screen; API uses this user as the system actor).")
+        print("\n✅ Open the app at http://localhost:3001 and go to /interview.")
+        print("(No login screen; API uses this user as the system actor.)")
 
 
 if __name__ == "__main__":
     email = sys.argv[1] if len(sys.argv) > 1 else "admin@example.com"
     password = sys.argv[2] if len(sys.argv) > 2 else "admin123"
     full_name = sys.argv[3] if len(sys.argv) > 3 else "Admin User"
-    
+
     asyncio.run(create_admin_user(email, password, full_name))

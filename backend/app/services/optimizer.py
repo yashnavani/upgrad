@@ -5,7 +5,7 @@ import asyncio
 import json
 import logging
 import re
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import UUID
 
@@ -79,7 +79,7 @@ async def _notify_superusers(db: AsyncSession, title: str, message: str) -> None
 
 
 async def _recent_draft_exists(db: AsyncSession) -> bool:
-    since = datetime.now(timezone.utc) - timedelta(hours=_DEDUP_HOURS)
+    since = datetime.now(UTC) - timedelta(hours=_DEDUP_HOURS)
     q = await db.execute(
         select(func.count())
         .select_from(Policy)

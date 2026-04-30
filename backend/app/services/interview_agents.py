@@ -59,16 +59,21 @@ def _interviewer_turn_instruction(history: list[dict[str, Any]], max_turns: int)
     user_answers = sum(1 for m in history if m.get("role") == "user")
     if user_answers == 0:
         return (
-            f"OPENING: This session will end after exactly {max_turns} candidate answers, then evaluation. "
-            "Ask ONE strong first question grounded in the target role, focus area, and resume (if any). "
+            f"OPENING: This session will end after exactly {max_turns} candidate answers, "
+            "then evaluation. "
+            "Ask ONE strong first question grounded in the target role, focus area, "
+            "and resume (if any). "
             "Avoid a throwaway icebreaker unless it tees up real depth."
         )
     remaining = max_turns - user_answers
     return (
         f"PROGRESS: The candidate has given {user_answers} answer(s); "
-        f"{remaining} candidate answer(s) remain in this interview (including their reply to your next question). "
-        "Adapt: weak or generic last answer → one sharp follow-up; strong last answer → move forward with a harder or "
-        "wider angle. Calibrate difficulty to their level. React only to their last answer—no fixed question list. "
+        f"{remaining} candidate answer(s) remain in this interview "
+        "(including their reply to your next question). "
+        "Adapt: weak or generic last answer → one sharp follow-up; strong last answer → "
+        "move forward with a harder or "
+        "wider angle. Calibrate difficulty to their level. React only to their last "
+        "answer—no fixed question list. "
         "Output ONLY your next spoken line (brief bridge + ONE question)."
     )
 
@@ -120,7 +125,8 @@ async def evaluate_and_coach(
         system_prompt=eval_system,
     )
     eval_run = await evaluator.run(
-        "Score each of the four dimensions independently (do not collapse to one overall judgment).\n\n"
+        "Score each of the four dimensions independently "
+        "(do not collapse to one overall judgment).\n\n"
         f"Transcript:\n\n{transcript_text}"
     )
     evaluation = eval_run.output

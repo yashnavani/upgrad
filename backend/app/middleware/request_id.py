@@ -2,7 +2,7 @@
 Request ID middleware for tracking requests across services.
 """
 import uuid
-from typing import Callable
+from collections.abc import Callable
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware

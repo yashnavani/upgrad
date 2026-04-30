@@ -75,7 +75,11 @@ class CRUDBase(Generic[ModelT, CreateT, UpdateT]):
         limit: int = 100,
     ) -> list[ModelT]:
         """Return a flat list (no pagination envelope). Useful for small collections."""
-        base_q = query if query is not None else select(self.model).where(self.model.is_deleted.is_(False))
+        base_q = (
+            query
+            if query is not None
+            else select(self.model).where(self.model.is_deleted.is_(False))
+        )
         result = await db.execute(base_q.offset(skip).limit(limit))
         return list(result.scalars().all())
 
@@ -88,7 +92,11 @@ class CRUDBase(Generic[ModelT, CreateT, UpdateT]):
         schema_cls: type | None = None,
     ) -> PaginatedResponse:
         """Return a PaginatedResponse envelope."""
-        base_q = query if query is not None else select(self.model).where(self.model.is_deleted.is_(False))
+        base_q = (
+            query
+            if query is not None
+            else select(self.model).where(self.model.is_deleted.is_(False))
+        )
         return await paginate(db, base_q, params, schema_cls)
 
     # ── Write ─────────────────────────────────────────────────────────────────
@@ -118,10 +126,9 @@ class CRUDBase(Generic[ModelT, CreateT, UpdateT]):
         obj_in: UpdateT | dict[str, Any],
     ) -> ModelT:
         """Apply partial updates to an existing object."""
-        if isinstance(obj_in, dict):
-            update_data = obj_in
-        else:
-            update_data = obj_in.model_dump(exclude_unset=True)
+        update_data = (
+            obj_in if isinstance(obj_in, dict) else obj_in.model_dump(exclude_unset=True)
+        )
 
         for field, value in update_data.items():
             setattr(db_obj, field, value)

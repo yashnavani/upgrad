@@ -1,6 +1,5 @@
-# Pin-compatible list for pip-based installs (assignment deliverable).
-# Source of truth for versions is backend/pyproject.toml — keep in sync when bumping deps.
-# Docker build uses backend/requirements.txt (same lines); update both together.
+# Runtime deps for Docker (no Hatch build — avoids hatchling fetch during image build).
+# Keep in sync with backend/pyproject.toml and repo-root requirements.txt.
 fastapi>=0.110.0
 uvicorn[standard]>=0.29.0
 gunicorn>=23.0.0

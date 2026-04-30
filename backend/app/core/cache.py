@@ -4,7 +4,8 @@ For production, replace with Redis-backed caching.
 """
 import asyncio
 import time
-from typing import Any, Callable, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from app.core.logging_config import get_logger
 

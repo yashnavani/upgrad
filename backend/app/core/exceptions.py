@@ -57,7 +57,10 @@ class UnprocessableError(HTTPException):
 class ServiceUnavailableError(HTTPException):
     """503 — a downstream dependency is unavailable."""
 
-    def __init__(self, detail: str = "Service temporarily unavailable. Please retry later.") -> None:
+    def __init__(
+        self,
+        detail: str = "Service temporarily unavailable. Please retry later.",
+    ) -> None:
         super().__init__(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=detail)
 
 

@@ -83,7 +83,7 @@ Backend still expects Postgres and env vars; Compose is the supported path for a
 
 ### Python dependencies (assignment / `pip`)
 
-Backend dependencies are declared in `backend/pyproject.toml` (Hatch). For a classic **`pip install -r requirements.txt`** workflow, use the generated **`requirements.txt`** at the repo root (same pins as the project dependencies list).
+Backend dependencies are declared in `backend/pyproject.toml` (Hatch). For **`pip install -r`**, use **`requirements.txt`** at the repo root and the identical **`backend/requirements.txt`** (Compose build context is `./backend`, so the image installs from the latter and avoids a Hatchling wheel build that can time out fetching PyPI).
 
 ---
 

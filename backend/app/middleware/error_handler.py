@@ -18,7 +18,7 @@ async def validation_exception_handler(
     """Handle Pydantic validation errors with detailed messages."""
     errors = exc.errors()
     logger.warning(f"Validation error on {request.url.path}: {errors}")
-    
+
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={
@@ -31,13 +31,13 @@ async def validation_exception_handler(
 async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError) -> JSONResponse:
     """Handle database errors gracefully."""
     logger.error(f"Database error on {request.url.path}: {exc}", exc_info=True)
-    
+
     if isinstance(exc, IntegrityError):
         return JSONResponse(
             status_code=status.HTTP_409_CONFLICT,
             content={"detail": "Database constraint violation. Resource may already exist."},
         )
-    
+
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={"detail": "An internal database error occurred."},
@@ -50,7 +50,7 @@ async def generic_exception_handler(request: Request, exc: Exception) -> JSONRes
         f"Unhandled exception on {request.url.path}: {type(exc).__name__}: {exc}",
         exc_info=True,
     )
-    
+
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={"detail": "An unexpected error occurred. Please try again later."},

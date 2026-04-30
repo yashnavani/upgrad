@@ -10,14 +10,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-COPY pyproject.toml .
-COPY app ./app
-
-RUN uv pip install --system --no-cache .
+# Install deps from requirements.txt only — do not `uv pip install .` (that triggers
+# Hatchling/pep517 and extra PyPI fetches that often time out in Docker builds).
+ENV UV_HTTP_TIMEOUT=600
+COPY requirements.txt .
+RUN uv pip install --system --no-cache -r requirements.txt
 
 FROM python:3.12-slim
 
 WORKDIR /app
+# Console scripts (e.g. procrastinate) put /usr/local/bin on sys.path[0], not /app — imports of `app.*` fail without this.
+ENV PYTHONPATH=/app
 
 COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin

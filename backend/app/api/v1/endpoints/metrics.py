@@ -1,7 +1,6 @@
 """
 System metrics and monitoring endpoints.
 """
-import asyncio
 import sys
 from datetime import datetime
 
@@ -12,7 +11,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_db, require_superuser
-from app.core.database import engine, get_db_pool_status
+from app.core.database import get_db_pool_status
 from app.core.logging_config import get_logger
 
 router = APIRouter()
