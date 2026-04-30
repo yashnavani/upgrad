@@ -46,8 +46,10 @@ def synthesize_voice_interview_wav_sync(text: str) -> bytes:
 
     prompt = (
         "You are a professional interviewer speaking aloud to a candidate. "
-        "Read the following exactly as the interview question — no preamble, no meta-commentary, "
-        "no closing remarks:\n\n"
+        "Use exactly one continuous speaking voice for the entire output — "
+        "do not switch voices, genders, or role-play multiple speakers. "
+        "Read the following exactly as one interview question — no preamble, "
+        "no meta-commentary, no closing remarks:\n\n"
         f"{stripped}"
     )
 
@@ -68,20 +70,27 @@ def synthesize_voice_interview_wav_sync(text: str) -> bytes:
     cand = response.candidates[0] if response.candidates else None
     if not cand or not cand.content or not cand.content.parts:
         raise RuntimeError("Gemini TTS returned no audio.")
-    part = cand.content.parts[0]
-    blob = getattr(part, "inline_data", None)
-    if blob is None or not getattr(blob, "data", None):
-        raise RuntimeError("Gemini TTS response missing inline audio data.")
 
-    pcm: bytes = blob.data
-    mime = (getattr(blob, "mime_type", None) or "").lower()
+    pcm_chunks: list[bytes] = []
     rate = _PCM_SAMPLE_RATE
-    if "rate=" in mime:
-        try:
-            frag = mime.split("rate=", 1)[1].split(";", 1)[0].strip()
-            rate = int(frag)
-        except (ValueError, IndexError):
-            rate = _PCM_SAMPLE_RATE
+    for part in cand.content.parts:
+        blob = getattr(part, "inline_data", None)
+        if blob is None or not getattr(blob, "data", None):
+            continue
+        mime = (getattr(blob, "mime_type", None) or "").lower()
+        if "audio" not in mime and "pcm" not in mime:
+            continue
+        if "rate=" in mime:
+            try:
+                frag = mime.split("rate=", 1)[1].split(";", 1)[0].strip()
+                rate = int(frag)
+            except (ValueError, IndexError):
+                rate = _PCM_SAMPLE_RATE
+        pcm_chunks.append(blob.data)
+
+    if not pcm_chunks:
+        raise RuntimeError("Gemini TTS response missing inline audio data.")
+    pcm: bytes = b"".join(pcm_chunks)
 
     return _pcm_l16_to_wav(pcm, sample_rate=rate)
 

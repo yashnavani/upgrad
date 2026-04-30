@@ -2,7 +2,7 @@
 Global error handling middleware for consistent error responses.
 """
 from fastapi import Request, status
-from fastapi.exceptions import RequestValidationError
+from fastapi.exceptions import RequestValidationError, ResponseValidationError
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
@@ -54,4 +54,23 @@ async def generic_exception_handler(request: Request, exc: Exception) -> JSONRes
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={"detail": "An unexpected error occurred. Please try again later."},
+    )
+
+
+async def response_validation_exception_handler(
+    request: Request, exc: ResponseValidationError
+) -> JSONResponse:
+    """Route return value did not match response_model (often upstream API shape drift)."""
+    logger.error(
+        "Response validation failed on %s: %s",
+        request.url.path,
+        exc.errors(),
+        exc_info=True,
+    )
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={
+            "detail": "Server response validation failed.",
+            "errors": exc.errors(),
+        },
     )

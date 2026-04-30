@@ -2,8 +2,9 @@
 import asyncio
 from contextlib import asynccontextmanager, suppress
 
-from fastapi import FastAPI
-from fastapi.exceptions import RequestValidationError
+from fastapi import FastAPI, HTTPException
+from fastapi.exception_handlers import http_exception_handler
+from fastapi.exceptions import RequestValidationError, ResponseValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
@@ -15,6 +16,7 @@ from app.core.logging_config import get_logger, setup_logging
 from app.core.worker import app as procrastinate_app
 from app.middleware.error_handler import (
     generic_exception_handler,
+    response_validation_exception_handler,
     sqlalchemy_exception_handler,
     validation_exception_handler,
 )
@@ -82,13 +84,25 @@ def create_app() -> FastAPI:
     app.add_middleware(RateLimitMiddleware, requests_per_minute=120)
     app.add_middleware(TelemetryMiddleware)
 
-    # Register exception handlers
+    # Register HTTPException / ResponseValidation before catch-all Exception.
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
     app.add_exception_handler(ValidationError, validation_exception_handler)
+    app.add_exception_handler(ResponseValidationError, response_validation_exception_handler)
+    app.add_exception_handler(HTTPException, http_exception_handler)
     app.add_exception_handler(SQLAlchemyError, sqlalchemy_exception_handler)
     app.add_exception_handler(Exception, generic_exception_handler)
 
     # CORS: merge `.env` with localhost / 127.0.0.1 on 3000 and 3001 so dev ports never break.
+    # Do not use allow_headers=["*"] with allow_credentials=True — browsers require explicit names.
+    _cors_allow_headers = [
+        "accept",
+        "accept-language",
+        "authorization",
+        "content-type",
+        "x-feature-pipeline",
+        "x-pipeline-root",
+        "x-request-id",
+    ]
     _cors_origins = list(
         dict.fromkeys(
             [
@@ -104,7 +118,7 @@ def create_app() -> FastAPI:
         "allow_origins": _cors_origins,
         "allow_credentials": True,
         "allow_methods": ["*"],
-        "allow_headers": ["*"],
+        "allow_headers": _cors_allow_headers,
     }
     if settings.ENVIRONMENT in ("development", "staging"):
         _cors["allow_origin_regex"] = r"^http://(localhost|127\.0\.0\.1)(:\d+)?$"

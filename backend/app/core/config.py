@@ -111,6 +111,20 @@ class Settings(BaseSettings):
         default="",
         description="Optional voice UUID for FULL mode; empty uses avatar default.",
     )
+
+    @field_validator(
+        "LIVEAVATAR_API_KEY",
+        "LIVEAVATAR_AVATAR_ID",
+        "LIVEAVATAR_CONTEXT_ID",
+        "LIVEAVATAR_VOICE_ID",
+        mode="before",
+    )
+    @classmethod
+    def strip_liveavatar_strings(cls, v: object) -> object:
+        if isinstance(v, str):
+            return v.strip().strip("\ufeff").replace("\r", "")
+        return v
+
     GEMINI_TEACHER_MODEL: str = Field(
         default="gemini-2.5-pro",
         description="Higher-reasoning model for nightly policy synthesis (Phase D).",

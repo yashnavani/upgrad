@@ -46,31 +46,103 @@ async def liveavatar_status(_current_user: User = Depends(get_current_user)):
     return LiveAvatarStatusOut(available=bool(key and aid))
 
 
-def _liveavatar_token_payload() -> dict[str, Any]:
-    """Build LiveAvatar token request. LITE only requires avatar_id; FULL needs avatar_persona."""
+def _liveavatar_avatar_id_or_422() -> str:
     avatar_id = (settings.LIVEAVATAR_AVATAR_ID or "").strip()
     if not avatar_id:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="LIVEAVATAR_AVATAR_ID is not configured.",
         )
-    sandbox = settings.LIVEAVATAR_USE_SANDBOX
-    if settings.LIVEAVATAR_SESSION_MODE == "LITE":
-        return {"mode": "LITE", "avatar_id": avatar_id, "is_sandbox": sandbox}
-    persona: dict[str, Any] = {"language": (settings.LIVEAVATAR_LANGUAGE or "en").strip() or "en"}
+    return avatar_id
+
+
+def _liveavatar_token_payload_lite() -> dict[str, Any]:
+    return {
+        "mode": "LITE",
+        "avatar_id": _liveavatar_avatar_id_or_422(),
+        "is_sandbox": settings.LIVEAVATAR_USE_SANDBOX,
+    }
+
+
+def _liveavatar_token_payload_full(*, include_voice: bool) -> dict[str, Any]:
+    persona: dict[str, Any] = {
+        "language": (settings.LIVEAVATAR_LANGUAGE or "en").strip() or "en",
+    }
     ctx = (settings.LIVEAVATAR_CONTEXT_ID or "").strip()
     if ctx:
         persona["context_id"] = ctx
-    voice = (settings.LIVEAVATAR_VOICE_ID or "").strip()
-    if voice:
-        persona["voice_id"] = voice
+    if include_voice:
+        voice = (settings.LIVEAVATAR_VOICE_ID or "").strip()
+        if voice:
+            persona["voice_id"] = voice
     return {
         "mode": "FULL",
-        "avatar_id": avatar_id,
-        "is_sandbox": sandbox,
+        "avatar_id": _liveavatar_avatar_id_or_422(),
+        "is_sandbox": settings.LIVEAVATAR_USE_SANDBOX,
         "avatar_persona": persona,
         "interactivity_type": "PUSH_TO_TALK",
     }
+
+
+def _liveavatar_error_detail(res: httpx.Response) -> str:
+    raw = (res.text or "")[:2000]
+    try:
+        body = res.json()
+    except Exception:
+        return raw or res.reason_phrase
+    if not isinstance(body, dict):
+        return raw or res.reason_phrase
+    msg = body.get("message")
+    if isinstance(msg, str) and msg.strip():
+        return msg.strip()
+    detail = body.get("detail")
+    if isinstance(detail, str) and detail.strip():
+        return detail.strip()
+    if isinstance(detail, list):
+        parts: list[str] = []
+        for item in detail:
+            if isinstance(item, dict):
+                loc = item.get("loc", [])
+                m = item.get("msg", "")
+                parts.append(f"{loc}: {m}" if loc or m else str(item))
+        if parts:
+            return "; ".join(parts)[:2000]
+    return raw or res.reason_phrase
+
+
+def _liveavatar_token_payloads_to_try() -> list[dict[str, Any]]:
+    """Try FULL with optional voice first; on 422 LiveAvatar often rejects mismatched voice_id."""
+    if settings.LIVEAVATAR_SESSION_MODE == "LITE":
+        return [_liveavatar_token_payload_lite()]
+    out: list[dict[str, Any]] = []
+    voice_set = bool((settings.LIVEAVATAR_VOICE_ID or "").strip())
+    out.append(_liveavatar_token_payload_full(include_voice=True))
+    if voice_set:
+        out.append(_liveavatar_token_payload_full(include_voice=False))
+    out.append(_liveavatar_token_payload_lite())
+    return out
+
+
+def _parse_liveavatar_token_body(body: object) -> LiveAvatarTokenOut:
+    if not isinstance(body, dict):
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="LiveAvatar returned a non-JSON object.",
+        )
+    data = body.get("data")
+    if not isinstance(data, dict):
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="LiveAvatar returned an unexpected response shape (missing data).",
+        )
+    token = data.get("session_token")
+    sid = data.get("session_id")
+    if not token or not sid:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="LiveAvatar response missing session_token or session_id.",
+        )
+    return LiveAvatarTokenOut(session_token=str(token), session_id=str(sid))
 
 
 @router.post(
@@ -86,38 +158,47 @@ async def mint_liveavatar_token(_current_user: User = Depends(get_current_user))
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="LIVEAVATAR_API_KEY is not configured.",
         )
-    payload = _liveavatar_token_payload()
     headers = {"X-API-KEY": api_key, "Content-Type": "application/json"}
+    payloads = _liveavatar_token_payloads_to_try()
+    last_detail = ""
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
-            res = await client.post(LIVEAVATAR_TOKEN_URL, headers=headers, json=payload)
+            for i, payload in enumerate(payloads):
+                res = await client.post(LIVEAVATAR_TOKEN_URL, headers=headers, json=payload)
+                if res.status_code == status.HTTP_200_OK:
+                    if i > 0:
+                        logger.warning(
+                            "LiveAvatar token succeeded with fallback payload index=%s (mode=%s)",
+                            i,
+                            payload.get("mode"),
+                        )
+                    try:
+                        body = res.json()
+                    except Exception as e:
+                        raise HTTPException(
+                            status_code=status.HTTP_502_BAD_GATEWAY,
+                            detail="LiveAvatar returned invalid JSON.",
+                        ) from e
+                    return _parse_liveavatar_token_body(body)
+
+                last_detail = _liveavatar_error_detail(res)
+                if res.status_code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN):
+                    raise HTTPException(status_code=res.status_code, detail=last_detail)
+                if status.HTTP_400 <= res.status_code < 500:
+                    if res.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY and i + 1 < len(
+                        payloads
+                    ):
+                        continue
+                    raise HTTPException(status_code=res.status_code, detail=last_detail)
+                raise HTTPException(
+                    status_code=status.HTTP_502_BAD_GATEWAY,
+                    detail=f"LiveAvatar API error ({res.status_code}): {last_detail}",
+                )
     except httpx.RequestError as e:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail=f"LiveAvatar token request failed: {e!s}",
         ) from e
-
-    if res.status_code != status.HTTP_200_OK:
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            detail=f"LiveAvatar API error ({res.status_code}): {res.text[:500]}",
-        )
-
-    body = res.json()
-    data = body.get("data") if isinstance(body, dict) else None
-    if not isinstance(data, dict):
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            detail="LiveAvatar returned an unexpected response shape.",
-        )
-    token = data.get("session_token")
-    sid = data.get("session_id")
-    if not token or not sid:
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            detail="LiveAvatar response missing session_token or session_id.",
-        )
-    return LiveAvatarTokenOut(session_token=str(token), session_id=str(sid))
 
 
 @router.post(

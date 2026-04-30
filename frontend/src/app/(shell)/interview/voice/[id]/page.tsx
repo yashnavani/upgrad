@@ -74,43 +74,78 @@ export default function VoiceInterviewRoomPage() {
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
+  /** Reject waiters when stopping so overlapping play() / catch never stacks two voices. */
+  const audioWaitRejectRef = useRef<((e: Error) => void) | null>(null);
+  /** Only latest playInterviewerLine may clear UI (avoids stale finally after overlap). */
+  const playGenRef = useRef(0);
   const autoSpokenKeyRef = useRef<string>("");
 
   const stopAllAudio = useCallback(() => {
+    if (typeof window !== "undefined") window.speechSynthesis?.cancel();
+    const reject = audioWaitRejectRef.current;
+    audioWaitRejectRef.current = null;
+    if (reject) {
+      reject(new DOMException("playback stopped", "AbortError"));
+    }
     const a = currentAudioRef.current;
     if (a) {
       a.pause();
-      a.src = "";
+      a.removeAttribute("src");
+      a.load();
       currentAudioRef.current = null;
     }
-    if (typeof window !== "undefined") window.speechSynthesis?.cancel();
   }, []);
 
   const playInterviewerLine = useCallback(
     async (text: string) => {
       const line = text.trim();
       if (!line) return;
+      const gen = ++playGenRef.current;
       stopAllAudio();
       setInterviewerSpeaking(true);
       setRoomStatus("Interviewer speaking (Gemini TTS)…");
+      let blobUrl: string | null = null;
       try {
         const blob = await postInterviewVoiceTts(line);
-        const url = URL.createObjectURL(blob);
-        const audio = new Audio(url);
+        if (playGenRef.current !== gen) return;
+        blobUrl = URL.createObjectURL(blob);
+        const audio = new Audio(blobUrl);
         currentAudioRef.current = audio;
         await new Promise<void>((resolve, reject) => {
-          audio.onended = () => resolve();
-          audio.onerror = () => reject(new Error("audio"));
-          void audio.play().catch(reject);
+          audioWaitRejectRef.current = reject;
+          const cleanup = () => {
+            audioWaitRejectRef.current = null;
+            audio.onended = null;
+            audio.onerror = null;
+          };
+          audio.onended = () => {
+            cleanup();
+            resolve();
+          };
+          audio.onerror = () => {
+            cleanup();
+            reject(new Error("audio"));
+          };
+          void audio.play().catch((err) => {
+            cleanup();
+            reject(err instanceof Error ? err : new Error(String(err)));
+          });
         });
-        URL.revokeObjectURL(url);
-      } catch {
+      } catch (e) {
+        const aborted =
+          e instanceof DOMException && (e.name === "AbortError" || e.message === "playback stopped");
+        if (aborted || playGenRef.current !== gen) return;
+        stopAllAudio();
         setRoomStatus("Gemini TTS unavailable — browser voice fallback.");
         await speakBrowserPlain(line);
       } finally {
+        if (blobUrl) URL.revokeObjectURL(blobUrl);
         currentAudioRef.current = null;
-        setInterviewerSpeaking(false);
-        setRoomStatus("Your turn — mic or type.");
+        audioWaitRejectRef.current = null;
+        if (playGenRef.current === gen) {
+          setInterviewerSpeaking(false);
+          setRoomStatus("Your turn — mic or type.");
+        }
       }
     },
     [stopAllAudio],
