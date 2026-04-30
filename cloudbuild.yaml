@@ -1,0 +1,24 @@
+# Cloud Build — API image (Dockerfile is backend/Dockerfile, not repo root).
+#
+# In Cloud Run / Cloud Build trigger: set build type to
+# "Cloud Build configuration file" and use this file (cloudbuild.yaml).
+# Do not use "Dockerfile" at repository root — there is none.
+#
+# Override _REGION / _AR_REPOSITORY / _IMAGE_NAME in the trigger if needed.
+substitutions:
+  _REGION: us-central1
+  _AR_REPOSITORY: cloud-run-source-deploy
+  _IMAGE_NAME: upgrad-backend
+
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/${_IMAGE_NAME}:$SHORT_SHA
+      - ./backend
+
+images:
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/${_IMAGE_NAME}:$SHORT_SHA
+
+timeout: 1800s
