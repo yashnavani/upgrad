@@ -5,7 +5,7 @@
 #
 # Override _REGION / _AR_REPOSITORY / _IMAGE_NAME in the trigger if needed.
 substitutions:
-  _REGION: us-central1
+  _REGION: europe-west1
   _AR_REPOSITORY: cloud-run-source-deploy
   _IMAGE_NAME: upgrad-backend
 
