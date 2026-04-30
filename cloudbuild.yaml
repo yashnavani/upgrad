@@ -20,4 +20,8 @@ steps:
 images:
   - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/${_IMAGE_NAME}:$SHORT_SHA
 
+# Required when the trigger sets a custom service_account (no default GCS logs bucket).
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 timeout: 1800s
