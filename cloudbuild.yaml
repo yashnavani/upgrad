@@ -1,8 +1,7 @@
-# Cloud Build — API image (Dockerfile is backend/Dockerfile, not repo root).
+# Cloud Build — API image from ./backend (smaller context than repo-root Dockerfile).
 #
-# In Cloud Run / Cloud Build trigger: set build type to
-# "Cloud Build configuration file" and use this file (cloudbuild.yaml).
-# Do not use "Dockerfile" at repository root — there is none.
+# Triggers that use "Dockerfile" at repo root: see /Dockerfile (wraps backend/).
+# Triggers that use this file: set build type to Cloud Build yaml → cloudbuild.yaml.
 #
 # Override _REGION / _AR_REPOSITORY / _IMAGE_NAME in the trigger if needed.
 substitutions:
