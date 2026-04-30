@@ -3,11 +3,18 @@
 # Triggers that use "Dockerfile" at repo root: see /Dockerfile (wraps backend/).
 # Triggers that use this file: set build type to Cloud Build yaml → cloudbuild.yaml.
 #
-# Override _REGION / _AR_REPOSITORY / _IMAGE_NAME in the trigger if needed.
+# If push fails with "Repository ... not found", create the Docker repo once (pick the
+# same region as Cloud Run, e.g. europe-west1):
+#   gcloud artifacts repositories create cloud-run-source-deploy \
+#     --repository-format=docker --location=europe-west1 --project=PROJECT_ID
+# Then grant the Cloud Build service account "Artifact Registry Writer" on that repo
+# (or project-level roles/artifactregistry.writer).
+#
+# Override _REGION / _AR_REPOSITORY / _IMAGE_NAME in the trigger if your setup differs.
 substitutions:
   _REGION: europe-west1
   _AR_REPOSITORY: cloud-run-source-deploy
-  _IMAGE_NAME: upgrad-backend
+  _IMAGE_NAME: upgrad
 
 steps:
   - name: gcr.io/cloud-builders/docker
