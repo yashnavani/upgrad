@@ -4,12 +4,10 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import {
   BrainCircuit,
-  ClipboardCheck,
   LayoutDashboard,
   Lightbulb,
   List,
   Settings,
-  Users,
   Workflow,
 } from "lucide-react";
 
@@ -57,7 +55,7 @@ export function CommandMenu() {
             </CommandItem>
           </CommandGroup>
           <CommandSeparator />
-          <CommandGroup heading="Agents &amp; administration">
+          <CommandGroup heading="Agents">
             <CommandItem
               onSelect={() => runCommand(() => router.push("/ai/insights"))}
             >
@@ -69,20 +67,6 @@ export function CommandMenu() {
             >
               <Workflow className="mr-2 h-4 w-4" />
               <span>Policies &amp; tools</span>
-            </CommandItem>
-            <CommandItem
-              onSelect={() => runCommand(() => router.push("/admin/users"))}
-            >
-              <Users className="mr-2 h-4 w-4" />
-              <span>Team &amp; clients</span>
-            </CommandItem>
-            <CommandItem
-              onSelect={() =>
-                runCommand(() => router.push("/admin/approvals"))
-              }
-            >
-              <ClipboardCheck className="mr-2 h-4 w-4" />
-              <span>Human approvals</span>
             </CommandItem>
           </CommandGroup>
           <CommandSeparator />

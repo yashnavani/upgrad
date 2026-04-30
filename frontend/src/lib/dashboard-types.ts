@@ -18,6 +18,7 @@ export type DashboardMetrics = {
   pending_decisions: number | null;
   audit_events_24h: number | null;
   chart_days: ChartDay[];
+  items_owned: number | null;
 };
 
 export type InsightItem = {

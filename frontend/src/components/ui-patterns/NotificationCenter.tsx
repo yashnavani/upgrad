@@ -51,9 +51,9 @@ export function NotificationCenter() {
       <PopoverContent
         align="end"
         side="bottom"
-        className="glass-panel w-80 rounded-2xl border-border/50 p-0"
+        className="w-80 rounded-2xl border border-border bg-card p-0 shadow-lg"
       >
-        <div className="flex items-center justify-between border-b border-border/30 px-4 py-3">
+        <div className="flex items-center justify-between border-b border-border px-4 py-3">
           <h3 className="text-sm font-semibold">Notifications</h3>
           {unreadCount > 0 && (
             <Button
@@ -75,7 +75,7 @@ export function NotificationCenter() {
                 n.read ? "opacity-70" : "bg-primary/5"
               )}
             >
-              <div className="mt-0.5 rounded-lg border border-border/50 bg-background p-1.5 shadow-sm">
+              <div className="mt-0.5 rounded-lg border border-border bg-background p-1.5 shadow-sm">
                 <NotificationIcon type={n.type} />
               </div>
               <div className="min-w-0 flex-1 space-y-1">

@@ -2,21 +2,10 @@
 import asyncio
 import logging
 
-from google import genai
-
-from app.core.config import settings
+from app.core.gemini_clients import get_google_genai_sdk_client
 from app.models.decision import EMBEDDING_DIM
 
 logger = logging.getLogger(__name__)
-
-_client: genai.Client | None = None
-
-
-def _get_client() -> genai.Client:
-    global _client
-    if _client is None:
-        _client = genai.Client(api_key=settings.GEMINI_API_KEY)
-    return _client
 
 
 def _normalize_dim(values: list[float]) -> list[float]:
@@ -32,7 +21,9 @@ def _normalize_dim(values: list[float]) -> list[float]:
 def _embed_sync(text: str) -> list[float]:
     text = (text or "").strip() or " "
     try:
-        client = _get_client()
+        client = get_google_genai_sdk_client()
+        if client is None:
+            return [0.0] * EMBEDDING_DIM
         response = client.models.embed_content(
             model="text-embedding-004",
             contents=text,

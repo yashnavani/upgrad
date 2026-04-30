@@ -5,12 +5,12 @@ import { usePathname } from "next/navigation";
 import {
   ChevronLeft,
   ChevronRight,
-  ClipboardCheck,
+  Headphones,
   LayoutDashboard,
   Lightbulb,
   List,
+  Mic,
   Settings,
-  Users,
   Workflow,
   X,
 } from "lucide-react";
@@ -21,14 +21,34 @@ import { cn } from "@/lib/utils";
 
 import { useSidebar } from "./SidebarProvider";
 
-const NAV_ITEMS = [
-  { label: "Overview", href: "/", icon: LayoutDashboard },
-  { label: "Agent insights", href: "/ai/insights", icon: Lightbulb },
-  { label: "Policies & tools", href: "/ai/policies", icon: Workflow },
-  { label: "Run logs", href: "/logs", icon: List },
-  { label: "Team & clients", href: "/admin/users", icon: Users },
-  { label: "Human approvals", href: "/admin/approvals", icon: ClipboardCheck },
-  { label: "Workspace settings", href: "/settings", icon: Settings },
+interface NavSection {
+  title: string;
+  items: { label: string; href: string; icon: React.ComponentType<{ className?: string }> }[];
+}
+
+const NAV_SECTIONS: NavSection[] = [
+  {
+    title: "Overview",
+    items: [
+      { label: "Dashboard", href: "/", icon: LayoutDashboard },
+    ],
+  },
+  {
+    title: "Operations",
+    items: [
+      { label: "Mock interview", href: "/interview", icon: Mic },
+      { label: "Voice interview", href: "/interview/voice", icon: Headphones },
+      { label: "Agent Insights", href: "/ai/insights", icon: Lightbulb },
+      { label: "Policies & Tools", href: "/ai/policies", icon: Workflow },
+      { label: "Run Logs", href: "/logs", icon: List },
+    ],
+  },
+  {
+    title: "Configuration",
+    items: [
+      { label: "Settings", href: "/settings", icon: Settings },
+    ],
+  },
 ];
 
 function NavLinks({
@@ -41,32 +61,49 @@ function NavLinks({
   const pathname = usePathname();
 
   return (
-    <nav className="mt-6 flex flex-col gap-1.5 px-3">
-      {NAV_ITEMS.map((item) => {
-        const isActive =
-          item.href === "/"
-            ? pathname === "/"
-            : pathname === item.href ||
-              pathname.startsWith(`${item.href}/`);
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={onClick}
-            className={cn(
-              "group relative flex items-center gap-3 overflow-hidden rounded-xl px-4 py-3 font-medium transition-all duration-300",
-              isActive
-                ? "bg-sidebar-accent text-sidebar-primary font-semibold"
-                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
-              isCollapsed ? "justify-center" : "justify-start"
-            )}
-            title={isCollapsed ? item.label : undefined}
-          >
-            <item.icon className="h-5 w-5 shrink-0" />
-            {!isCollapsed && <span>{item.label}</span>}
-          </Link>
-        );
-      })}
+    <nav className="flex flex-col gap-4 px-2 pt-4">
+      {NAV_SECTIONS.map((section) => (
+        <div key={section.title}>
+          {!isCollapsed && (
+            <p className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/50">
+              {section.title}
+            </p>
+          )}
+          <div className="flex flex-col gap-0.5">
+            {section.items.map((item) => {
+              const isActive =
+                item.href === "/"
+                  ? pathname === "/"
+                  : pathname === item.href ||
+                    (item.href === "/interview"
+                      ? pathname.startsWith("/interview") &&
+                        !pathname.startsWith("/interview/voice")
+                      : pathname.startsWith(`${item.href}/`) || pathname === item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={onClick}
+                  className={cn(
+                    "group relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-colors duration-150",
+                    isActive
+                      ? "bg-sidebar-accent text-white"
+                      : "text-sidebar-foreground hover:bg-white/5 hover:text-white",
+                    isCollapsed ? "justify-center" : "justify-start"
+                  )}
+                  title={isCollapsed ? item.label : undefined}
+                >
+                  {isActive && (
+                    <span className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-primary" />
+                  )}
+                  <item.icon className="h-[18px] w-[18px] shrink-0" />
+                  {!isCollapsed && <span>{item.label}</span>}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      ))}
     </nav>
   );
 }
@@ -79,29 +116,37 @@ export function Sidebar() {
     <>
       <aside
         className={cn(
-          "z-20 hidden h-screen flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground backdrop-blur-xl transition-all duration-300 md:flex",
-          isCollapsed ? "w-20" : "w-64"
+          "z-20 hidden h-screen flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-all duration-200 md:flex",
+          isCollapsed ? "w-[68px]" : "w-[240px]"
         )}
       >
         <div
           className={cn(
-            "flex h-[4.25rem] flex-col justify-center gap-1 px-4 pb-1",
-            isCollapsed ? "items-center" : ""
+            "flex h-16 items-center gap-3 border-b border-sidebar-border px-4",
+            isCollapsed ? "justify-center" : ""
           )}
         >
-          {!isCollapsed && (
-            <div>
-              <span className="text-xl font-bold tracking-tighter text-sidebar-primary">
-                Luminous
-              </span>
-              <p className="mt-1 text-[10px] font-medium tracking-widest text-muted-foreground uppercase">
-                Enterprise SaaS
-              </p>
+          {!isCollapsed ? (
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+                <svg className="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                  <path d="M2 17l10 5 10-5" />
+                  <path d="M2 12l10 5 10-5" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-bold text-white leading-tight">Luminous</p>
+                <p className="text-[10px] font-medium text-sidebar-foreground/60">Powered by AI</p>
+              </div>
             </div>
-          )}
-          {isCollapsed && (
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sidebar-accent border border-sidebar-primary/20 font-bold text-sidebar-primary">
-              L
+          ) : (
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+              <svg className="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                <path d="M2 17l10 5 10-5" />
+                <path d="M2 12l10 5 10-5" />
+              </svg>
             </div>
           )}
         </div>
@@ -110,19 +155,17 @@ export function Sidebar() {
           <NavLinks isCollapsed={isCollapsed} />
         </div>
 
-        <div className="mt-auto flex justify-center border-t border-sidebar-border p-4">
-          <Button
-            variant="ghost"
-            size="icon"
+        <div className="border-t border-sidebar-border p-3">
+          <button
             onClick={toggleCollapse}
-            className="text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+            className="flex w-full items-center justify-center rounded-lg p-2 text-sidebar-foreground/50 transition-colors hover:bg-white/5 hover:text-white"
           >
             {isCollapsed ? (
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="h-4 w-4" />
             ) : (
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-4 w-4" />
             )}
-          </Button>
+          </button>
         </div>
       </aside>
 
@@ -130,27 +173,32 @@ export function Sidebar() {
         <SheetContent
           side="left"
           showCloseButton={false}
-          className="w-72 border-r-sidebar-border bg-sidebar p-0 text-sidebar-foreground backdrop-blur-xl"
+          className="w-[240px] border-r-sidebar-border bg-sidebar p-0 text-sidebar-foreground"
         >
-          <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-6">
-            <SheetTitle className="text-xl font-bold tracking-tighter text-sidebar-primary">
-              Luminous
+          <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-4">
+            <SheetTitle className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+                <svg className="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                  <path d="M2 17l10 5 10-5" />
+                  <path d="M2 12l10 5 10-5" />
+                </svg>
+              </div>
+              <span className="text-sm font-bold text-white">Luminous</span>
             </SheetTitle>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setMobileOpen(false)}
-              className="text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+              className="text-sidebar-foreground hover:bg-white/5 hover:text-white"
             >
-              <X className="h-5 w-5" />
+              <X className="h-4 w-4" />
             </Button>
           </div>
-          <div className="px-4">
-            <NavLinks
-              isCollapsed={false}
-              onClick={() => setMobileOpen(false)}
-            />
-          </div>
+          <NavLinks
+            isCollapsed={false}
+            onClick={() => setMobileOpen(false)}
+          />
         </SheetContent>
       </Sheet>
     </>

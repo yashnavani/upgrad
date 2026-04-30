@@ -31,7 +31,7 @@ const ActivityChart = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="glass-panel h-[300px] w-full animate-pulse rounded-xl bg-muted/20" />
+      <div className="h-[300px] w-full animate-pulse rounded-xl border border-border bg-card" />
     ),
   }
 );
@@ -40,16 +40,16 @@ const containerVariants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.1 },
+    transition: { staggerChildren: 0.08 },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 12 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { type: "spring" as const, stiffness: 300, damping: 24 },
+    transition: { type: "spring" as const, stiffness: 400, damping: 28 },
   },
 };
 
@@ -107,6 +107,7 @@ export default function Home() {
   const audit24 = metrics?.audit_events_24h;
   const usersTotal = metrics?.users_total;
   const pending = metrics?.pending_decisions;
+  const itemsOwned = metrics?.items_owned;
   const isSuper = me?.is_superuser === true;
 
   const agentsHeadline =
@@ -119,160 +120,157 @@ export default function Home() {
         : "Create policies under Policies & tools";
 
   const logsHeadline =
-    isSuper && audit24 != null ? String(audit24) : isSuper ? "0" : "—";
-  const logsSub =
-    isSuper && audit24 != null
-      ? "Audited API requests (last 24h)"
-      : "Superuser view shows live audit volume";
+    audit24 != null ? String(audit24) : metrics ? "0" : "…";
+  const logsSub = isSuper
+    ? "Audited API requests (last 24h, org-wide)"
+    : "Your audited API requests (last 24h)";
 
-  const accessHeadline = isSuper && usersTotal != null ? String(usersTotal) : "—";
+  const accessHeadline = isSuper
+    ? usersTotal != null
+      ? String(usersTotal)
+      : "—"
+    : itemsOwned != null
+      ? String(itemsOwned)
+      : "—";
   const accessSub = isSuper
     ? pending != null && pending > 0
-      ? `${pending} approval(s) pending`
-      : "Directory synced from database"
-    : "Superuser directory for operators";
+      ? `${pending} pending — review in Agent Insights → Decisions tab`
+      : "Org-wide user count"
+    : pending != null && pending > 0
+      ? `${pending} of your proposals awaiting approval`
+      : "Records you own in the workspace";
+
+  const greeting = me?.full_name
+    ? `Hi ${me.full_name.split(" ")[0]}!`
+    : me?.email
+      ? `Hi ${me.email.split("@")[0]}!`
+      : "Welcome back!";
 
   return (
     <motion.div
-      className="mx-auto max-w-6xl space-y-10 py-6 pb-24"
+      className="mx-auto max-w-6xl space-y-8"
       variants={containerVariants}
       initial="hidden"
       animate="show"
     >
-      {loadError ? (
+      {loadError && (
         <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
           {loadError}
         </p>
-      ) : null}
-      {reportHint ? (
+      )}
+      {reportHint && (
         <p className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">
           {reportHint}
         </p>
-      ) : null}
+      )}
 
-      <motion.div variants={itemVariants} className="space-y-3">
-        <div className="inline-flex items-center rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-sm font-medium text-primary backdrop-blur-sm">
-          <span className="mr-2 flex h-2 w-2 animate-pulse rounded-full bg-primary shadow-[0_0_12px_oklch(0.55_0.2_278/0.6)]" />
-          {me ? "Connected to API" : "Loading…"}
-        </div>
-            <h1 className="text-fluid-h2 font-extrabold tracking-tight text-foreground">
-              Global Dashboard
-            </h1>
-            <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground">
-              Luminous glass interface — manage agents, policies, approvals, and
-              operational telemetry in one unified workspace.
-            </p>
+      <motion.div variants={itemVariants} className="space-y-1">
+        <p className="text-sm text-muted-foreground">Start Operating</p>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">
+          {greeting}
+        </h1>
       </motion.div>
 
       <motion.div
         variants={containerVariants}
-        className="grid grid-cols-1 gap-6 md:grid-cols-3"
+        className="grid grid-cols-1 gap-5 md:grid-cols-3"
       >
         <motion.div variants={itemVariants}>
-          <Card className="glass-panel flex h-full flex-col">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="h-full border border-border shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Deployed agents
+                Deployed Agents
               </CardTitle>
               <div className="rounded-lg bg-primary/10 p-2">
                 <BrainCircuit className="h-4 w-4 text-primary" />
               </div>
             </CardHeader>
-            <CardContent className="flex flex-1 flex-col justify-between">
-              <div>
-                <div className="text-3xl font-bold text-foreground">
-                  {metrics ? agentsHeadline : "…"}
-                </div>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {metrics ? agentsSub : "Loading policy counts…"}
-                </p>
+            <CardContent>
+              <div className="text-3xl font-bold text-foreground">
+                {metrics ? agentsHeadline : "…"}
               </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="mt-2 h-auto justify-start px-0 py-1 text-[10px] text-muted-foreground hover:text-primary"
-                onClick={() => setTeachOpen(true)}
-              >
-                <Sparkles className="mr-1 h-3 w-3" />
-                Not accurate? Teach AI
-              </Button>
-              <Link
-                href="/ai/policies"
-                className={cn(
-                  buttonVariants({ variant: "ghost", size: "default" }),
-                  "group mt-2 w-full justify-between hover:bg-primary/5 hover:text-primary"
-                )}
-              >
-                Agent configuration
-                <ArrowRight className="h-4 w-4 opacity-50 transition-all group-hover:translate-x-1 group-hover:opacity-100" />
-              </Link>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {metrics ? agentsSub : "Loading…"}
+              </p>
+              <div className="mt-4 flex items-center justify-between">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-auto px-0 py-0 text-[11px] text-muted-foreground hover:text-primary"
+                  onClick={() => setTeachOpen(true)}
+                >
+                  <Sparkles className="mr-1 h-3 w-3" />
+                  Not accurate? Teach AI
+                </Button>
+                <Link
+                  href="/ai/policies"
+                  className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+                >
+                  View
+                  <ArrowRight className="h-3 w-3" />
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </motion.div>
 
         <motion.div variants={itemVariants}>
-          <Card className="glass-panel flex h-full flex-col">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="h-full border border-border shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Run &amp; audit logs
+                Run & Audit Logs
               </CardTitle>
               <div className="rounded-lg bg-emerald-500/10 p-2">
                 <Activity className="h-4 w-4 text-emerald-500" />
               </div>
             </CardHeader>
-            <CardContent className="flex flex-1 flex-col justify-between">
-              <div>
-                <div className="text-3xl font-bold text-foreground">
-                  {metrics ? logsHeadline : "…"}
-                </div>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {metrics ? logsSub : "Loading audit summary…"}
-                </p>
+            <CardContent>
+              <div className="text-3xl font-bold text-foreground">
+                {metrics ? logsHeadline : "…"}
               </div>
-              <Link
-                href="/logs"
-                className={cn(
-                  buttonVariants({ variant: "ghost", size: "default" }),
-                  "group mt-4 w-full justify-between hover:bg-emerald-500/5 hover:text-emerald-600"
-                )}
-              >
-                Open run logs
-                <ArrowRight className="h-4 w-4 opacity-50 transition-all group-hover:translate-x-1 group-hover:opacity-100" />
-              </Link>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {metrics ? logsSub : "Loading…"}
+              </p>
+              <div className="mt-4 flex justify-end">
+                <Link
+                  href="/logs"
+                  className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+                >
+                  View Logs
+                  <ArrowRight className="h-3 w-3" />
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </motion.div>
 
         <motion.div variants={itemVariants}>
-          <Card className="glass-panel flex h-full flex-col">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="h-full border border-border shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Team &amp; client access
+                {me && !me.is_superuser ? "Your workspace" : "Org directory"}
               </CardTitle>
               <div className="rounded-lg bg-violet-500/10 p-2">
                 <ShieldCheck className="h-4 w-4 text-violet-500" />
               </div>
             </CardHeader>
-            <CardContent className="flex flex-1 flex-col justify-between">
-              <div>
-                <div className="text-3xl font-bold text-foreground">
-                  {metrics ? accessHeadline : "…"}
-                </div>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {metrics ? accessSub : "Loading directory summary…"}
-                </p>
+            <CardContent>
+              <div className="text-3xl font-bold text-foreground">
+                {metrics ? accessHeadline : "…"}
               </div>
-              <Link
-                href="/admin/users"
-                className={cn(
-                  buttonVariants({ variant: "ghost", size: "default" }),
-                  "group mt-4 w-full justify-between hover:bg-violet-500/5 hover:text-violet-600"
-                )}
-              >
-                Manage access
-                <ArrowRight className="h-4 w-4 opacity-50 transition-all group-hover:translate-x-1 group-hover:opacity-100" />
-              </Link>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {metrics ? accessSub : "Loading…"}
+              </p>
+              <div className="mt-4 flex justify-end">
+                <Link
+                  href={isSuper && pending != null && pending > 0 ? "/ai/insights?tab=decisions" : "/settings"}
+                  className="inline-flex items-center gap-1 text-xs font-medium text-violet-600 hover:underline dark:text-violet-400"
+                >
+                  {isSuper && pending != null && pending > 0 ? "Review queue" : "Settings"}
+                  <ArrowRight className="h-3 w-3" />
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </motion.div>
@@ -281,7 +279,8 @@ export default function Home() {
       <motion.div variants={itemVariants}>
         <ActivityChart
           liveOnly
-          data={isSuper ? (metrics?.chart_days ?? []) : []}
+          scope={isSuper ? "organization" : "personal"}
+          data={metrics?.chart_days ?? []}
         />
       </motion.div>
 
@@ -290,23 +289,23 @@ export default function Home() {
           type="button"
           variant="default"
           size="lg"
-          className="rounded-full shadow-md"
+          className="rounded-full px-6 shadow-sm"
           disabled={reportBusy}
           onClick={() => void runHealthReport()}
         >
           {reportBusy ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : null}
-          Run agent health check
+          Run Health Check
         </Button>
         <Link
           href="/ai/insights"
           className={cn(
             buttonVariants({ variant: "outline", size: "lg" }),
-            "rounded-full"
+            "rounded-full px-6"
           )}
         >
-          Open insights
+          Open Insights
         </Link>
       </motion.div>
 

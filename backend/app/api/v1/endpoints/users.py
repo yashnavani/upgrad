@@ -24,8 +24,7 @@ async def list_users(
 @router.get("/me", summary="Get Current User")
 async def read_users_me(current_user: User = Depends(get_current_user)):
     """
-    Fetch the profile of the currently logged-in user.
-    Any valid JWT will allow access to this endpoint.
+    Profile for the resolved system actor (see SYSTEM_ACTOR_USER_ID / first active user).
     """
     return {
         "id": str(current_user.id),

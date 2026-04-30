@@ -51,7 +51,7 @@ async def create_admin_user(
         print(f"   Email: {email}")
         print(f"   Password: {password}")
         print(f"   Superuser: {user.is_superuser}")
-        print(f"\n🔐 You can now login at http://localhost:3001/login")
+        print(f"\n✅ Open the app at http://localhost:3001 and go to /interview (no login screen; API uses this user as the system actor).")
 
 
 if __name__ == "__main__":

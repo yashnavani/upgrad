@@ -209,7 +209,7 @@ export default function SettingsPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-8">
       <div>
-        <h1 className="text-fluid-h3 font-bold tracking-tight text-foreground">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">
           Workspace settings
         </h1>
         <p className="mt-1 text-muted-foreground">
@@ -224,17 +224,17 @@ export default function SettingsPage() {
         </p>
       ) : null}
 
-      <Card className="glass-panel border-border/50">
+      <Card className="border border-border shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <User className="h-5 w-5 text-primary" />
             Profile
           </CardTitle>
           <CardDescription>
-            From the authenticated session and <code className="font-mono text-xs">GET /users/me</code>.
+            From <code className="font-mono text-xs">GET /users/me</code> (system actor; no login).
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-3 text-sm">
+        <CardContent className="space-y-4 text-sm">
           <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
             <span className="text-muted-foreground">Email</span>
             <span className="font-medium text-foreground">{me.email}</span>
@@ -255,7 +255,7 @@ export default function SettingsPage() {
       </Card>
 
       {!me.is_superuser ? (
-        <Card className="border-border/60 bg-muted/20">
+        <Card className="border border-border bg-muted/20">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <ShieldAlert className="h-5 w-5 text-muted-foreground" />
@@ -269,7 +269,7 @@ export default function SettingsPage() {
         </Card>
       ) : (
         <>
-          <Card className="glass-panel border-border/50">
+          <Card className="border border-border shadow-sm">
             <CardHeader>
               <CardTitle className="text-lg">System settings</CardTitle>
               <CardDescription>
@@ -292,7 +292,7 @@ export default function SettingsPage() {
                     return (
                       <li
                         key={row.id}
-                        className="rounded-xl border border-border/50 bg-muted/10 p-4"
+                        className="rounded-xl border border-border bg-muted/10 p-4"
                       >
                         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                           <code className="rounded bg-muted px-2 py-0.5 font-mono text-xs">
@@ -343,7 +343,7 @@ export default function SettingsPage() {
                             type="button"
                             size="sm"
                             disabled={savingKey === row.key}
-                            onClick={() => saveSetting(row.key)}
+                            onClick={() => void saveSetting(row.key)}
                           >
                             {savingKey === row.key ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
@@ -361,7 +361,7 @@ export default function SettingsPage() {
                 </ul>
               )}
 
-              <div className="border-t border-border/50 pt-6">
+              <div className="border-t border-border pt-6">
                 <h3 className="mb-3 text-sm font-semibold text-foreground">
                   Add or upsert a setting
                 </h3>

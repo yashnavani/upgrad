@@ -14,6 +14,7 @@ class DashboardMetrics(BaseModel):
     pending_decisions: int | None = None
     audit_events_24h: int | None = None
     chart_days: list[ChartDay] = Field(default_factory=list)
+    items_owned: int | None = None
 
 
 class InsightItem(BaseModel):

@@ -1,7 +1,7 @@
+import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 
-import { AuthSessionProvider } from "@/components/providers/AuthSessionProvider";
 import { NotificationFeedProvider } from "@/components/providers/NotificationFeedProvider";
 import { RealtimeConnection } from "@/components/providers/RealtimeConnection";
 
@@ -22,26 +22,24 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Luminous | Enterprise SaaS",
   description:
-    "Luminous glass interface — manage agents, policies, and operations with light & dark modes.",
+    "Luminous — manage agents, policies, and operations.",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
-          <html
-            lang="en"
-            className={`${inter.variable} ${jetbrainsMono.variable}`}
+    <html
+      lang="en"
+      className={`${inter.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="ambient-bg enterprise-canvas flex min-h-screen flex-col bg-background text-foreground antialiased">
-        <AuthSessionProvider>
-          <NotificationFeedProvider>
-            <RealtimeConnection />
-            {children}
-          </NotificationFeedProvider>
-        </AuthSessionProvider>
+      <body className="flex min-h-screen flex-col bg-background text-foreground antialiased">
+        <NotificationFeedProvider>
+          <RealtimeConnection />
+          {children}
+        </NotificationFeedProvider>
       </body>
     </html>
   );

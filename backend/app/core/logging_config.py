@@ -3,9 +3,18 @@ Centralized logging configuration for the application.
 """
 import logging
 import sys
-from typing import Any
 
 from app.core.config import settings
+from app.core.pipeline import feature_pipeline_var, pipeline_root_var
+
+
+class _PipelineLogFilter(logging.Filter):
+    """Injects pipeline_root + feature_pipeline from contextvars into LogRecord."""
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        record.pipeline_root = pipeline_root_var.get() or "-"
+        record.feature_pipeline = feature_pipeline_var.get() or "-"
+        return True
 
 
 def setup_logging() -> None:
@@ -14,7 +23,10 @@ def setup_logging() -> None:
     
     # Create formatter
     formatter = logging.Formatter(
-        fmt="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        fmt=(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s "
+            "[root=%(pipeline_root)s feat=%(feature_pipeline)s]"
+        ),
         datefmt="%Y-%m-%d %H:%M:%S",
     )
     
@@ -30,6 +42,7 @@ def setup_logging() -> None:
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(log_level)
     console_handler.setFormatter(formatter)
+    console_handler.addFilter(_PipelineLogFilter())
     root_logger.addHandler(console_handler)
     
     # Reduce noise from third-party libraries

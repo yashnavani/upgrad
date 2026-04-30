@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useSession } from "next-auth/react";
 
 import { useNotificationFeed } from "@/components/providers/NotificationFeedProvider";
+import { apiClient } from "@/lib/api-client";
+import type { MeDto } from "@/lib/dashboard-types";
 
 function apiOriginToRealtimeWsUrl(apiUrl: string): string {
   const trimmed = apiUrl.replace(/\/$/, "");
@@ -27,11 +28,9 @@ function mapPriority(
 }
 
 /**
- * Maintains a WebSocket to the API real-time bus (JWT in query string).
- * Incoming NOTIFICATION payloads are appended to the notification feed.
+ * WebSocket to real-time bus (?user_id=…). Resolves id from NEXT_PUBLIC_SYSTEM_USER_ID or GET /users/me.
  */
 export function useRealtime(): void {
-  const { data: session, status } = useSession();
   const { addNotification } = useNotificationFeed();
   const socketRef = useRef<WebSocket | null>(null);
   const cleanupRef = useRef(false);
@@ -39,59 +38,74 @@ export function useRealtime(): void {
   useEffect(() => {
     cleanupRef.current = false;
 
-    if (status !== "authenticated" || !session?.accessToken) {
-      return undefined;
-    }
+    let cancelled = false;
 
-    const token = session.accessToken;
-    const apiUrl =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
-    const wsUrl = `${apiOriginToRealtimeWsUrl(apiUrl)}?token=${encodeURIComponent(token)}`;
-
-    const connect = () => {
-      if (cleanupRef.current) return;
-
-      const socket = new WebSocket(wsUrl);
-      socketRef.current = socket;
-
-      socket.onmessage = (event) => {
+    const run = async () => {
+      const fromEnv = (process.env.NEXT_PUBLIC_SYSTEM_USER_ID || "").trim();
+      let userId = fromEnv;
+      if (!userId) {
         try {
-          const data = JSON.parse(event.data as string) as {
-            type?: string;
-            priority?: string;
-            title?: string;
-            message?: string;
-          };
-          if (data.type === "NOTIFICATION" && data.title) {
-            addNotification({
-              type: mapPriority(data.priority),
-              title: data.title,
-              body: data.message,
-            });
-          }
+          const me = await apiClient<MeDto>("/users/me");
+          userId = me.id;
         } catch {
-          /* ignore malformed frames */
+          return;
         }
+      }
+      if (cancelled || !userId) return;
+
+      const apiUrl =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+      const baseWs = apiOriginToRealtimeWsUrl(apiUrl);
+      const wsUrl = `${baseWs}?user_id=${encodeURIComponent(userId)}`;
+
+      const connect = () => {
+        if (cleanupRef.current) return;
+
+        const socket = new WebSocket(wsUrl);
+        socketRef.current = socket;
+
+        socket.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data as string) as {
+              type?: string;
+              priority?: string;
+              title?: string;
+              message?: string;
+            };
+            if (data.type === "NOTIFICATION" && data.title) {
+              addNotification({
+                type: mapPriority(data.priority),
+                title: data.title,
+                body: data.message,
+              });
+            }
+          } catch {
+            /* ignore malformed frames */
+          }
+        };
+
+        socket.onclose = () => {
+          socketRef.current = null;
+          if (!cleanupRef.current) {
+            window.setTimeout(connect, 5000);
+          }
+        };
+
+        socket.onerror = () => {
+          socket.close();
+        };
       };
 
-      socket.onclose = () => {
-        socketRef.current = null;
-        if (!cleanupRef.current) {
-          window.setTimeout(connect, 5000);
-        }
-      };
-
-      socket.onerror = () => {
-        socket.close();
-      };
+      connect();
     };
 
-    connect();
+    void run();
 
     return () => {
+      cancelled = true;
       cleanupRef.current = true;
       socketRef.current?.close();
       socketRef.current = null;
     };
-  }, [status, session?.accessToken, addNotification]);
+  }, [addNotification]);
 }

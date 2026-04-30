@@ -1,5 +1,6 @@
 # backend/app/api/v1/endpoints/realtime.py
 import logging
+import uuid
 
 from fastapi import (
     APIRouter,
@@ -10,11 +11,15 @@ from fastapi import (
     WebSocketDisconnect,
     status,
 )
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
-from app.core.security import decode_access_token_for_websocket
+from app.core.database import AsyncSessionLocal
+from app.models.user import User
 from app.schemas.realtime import RealtimeInternalPush
 from app.services.realtime import manager
+from app.services.realtime_pg_notify import publish_internal_realtime_event
 
 logger = logging.getLogger(__name__)
 
@@ -24,31 +29,40 @@ router = APIRouter()
 @router.websocket("/ws")
 async def websocket_endpoint(
     websocket: WebSocket,
-    token: str | None = Query(None),
+    user_id: str | None = Query(None, description="Target user UUID (must exist and be active)."),
 ) -> None:
-    """
-    Real-time bus. JWT is passed as a query param because browsers cannot set
-    custom headers on the WebSocket handshake.
-    """
-    if not token:
+    """Real-time bus. Pass user_id query (no JWT)."""
+    if not user_id:
+        await websocket.close(code=1008)
+        return
+    try:
+        uid = uuid.UUID(str(user_id))
+    except (ValueError, TypeError):
         await websocket.close(code=1008)
         return
 
-    payload = decode_access_token_for_websocket(token)
-    sub = payload.get("sub") if payload else None
-    if not sub:
+    async with AsyncSessionLocal() as db:
+        result = await db.execute(
+            select(User).where(
+                User.id == uid,
+                User.is_active.is_(True),
+                User.is_deleted.is_(False),
+            )
+        )
+        user = result.scalar_one_or_none()
+    if not user:
         await websocket.close(code=1008)
         return
 
-    user_id = str(sub)
-    await manager.connect(user_id, websocket)
+    key = str(uid)
+    await manager.connect(key, websocket)
     try:
         while True:
             await websocket.receive_text()
     except WebSocketDisconnect:
         pass
     finally:
-        manager.disconnect(user_id, websocket)
+        manager.disconnect(key, websocket)
 
 
 @router.post("/internal/push", status_code=status.HTTP_204_NO_CONTENT)
@@ -58,9 +72,19 @@ async def internal_realtime_push(
 ) -> None:
     """
     Called by the Procrastinate worker (separate process) to deliver events to
-    sockets held in this API process.
+    WebSocket clients. Uses Postgres NOTIFY so all Gunicorn workers see the event.
     """
     if x_internal_realtime_secret != settings.INTERNAL_REALTIME_SECRET:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid secret")
 
-    await manager.send_personal_message(body.user_id, body.message)
+    if settings.ENVIRONMENT == "testing":
+        await manager.send_personal_message(body.user_id, body.message)
+        return
+
+    try:
+        await publish_internal_realtime_event(body.user_id, body.message)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=str(e),
+        ) from e

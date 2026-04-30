@@ -28,7 +28,7 @@ export function ThemeToggle() {
       variant="outline"
       size="sm"
       onClick={toggleTheme}
-      className="h-9 gap-2 rounded-full border-border/50 px-3 transition-all hover:border-primary/50 hover:bg-primary/5"
+      className="h-9 gap-2 rounded-full border-border px-3 transition-all hover:border-primary/50 hover:bg-primary/5"
       aria-label="Toggle theme"
     >
       <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />

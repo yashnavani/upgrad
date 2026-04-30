@@ -1,8 +1,9 @@
 # backend/app/core/config.py
 from pathlib import Path
 from typing import Literal
+from uuid import UUID
 
-from pydantic import AliasChoices, Field, PostgresDsn, computed_field, field_validator
+from pydantic import Field, PostgresDsn, computed_field, field_validator
 from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -31,17 +32,14 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "Master Foundation"
     ENVIRONMENT: Literal["development", "staging", "production", "testing"] = "development"
     API_V1_STR: str = "/api/v1"
-    
+
     @field_validator("ENVIRONMENT", mode="after")
     @classmethod
     def validate_production_settings(cls, v: str, info) -> str:
-        """Ensure production environment has secure settings."""
-        if v == "production":
-            jwt_secret = info.data.get("JWT_SECRET", "")
-            if jwt_secret == "change-me-in-production-min-32-chars":
-                raise ValueError("JWT_SECRET must be changed in production environment")
-            if len(jwt_secret) < 32:
-                raise ValueError("JWT_SECRET must be at least 32 characters in production")
+        if v == "production" and not info.data.get("SYSTEM_ACTOR_USER_ID"):
+            raise ValueError(
+                "SYSTEM_ACTOR_USER_ID must be set in production (single DB user for all requests)."
+            )
         return v
 
     # Database Settings
@@ -81,18 +79,46 @@ class Settings(BaseSettings):
             path=self.POSTGRES_DB,
         )
 
-    # Native JWT signing (accept legacy SUPABASE_JWT_SECRET env name for existing deployments)
-    JWT_SECRET: str = Field(
-        default="change-me-in-production-min-32-chars",
-        validation_alias=AliasChoices("JWT_SECRET", "SUPABASE_JWT_SECRET", "AUTH_SECRET"),
+    # Single resolved User row for every authenticated endpoint (auth disabled).
+    SYSTEM_ACTOR_USER_ID: UUID | None = Field(
+        default=None,
+        description="If set, this User.id is used as the actor for all API calls.",
     )
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
 
     # AI Configuration (empty until set; required for embeddings / agent features)
     GEMINI_API_KEY: str = Field(default="")
+
+    # HeyGen LiveAvatar (optional; backend mints session token for the web SDK)
+    LIVEAVATAR_API_KEY: str = Field(default="", description="LiveAvatar API key (X-API-KEY).")
+    LIVEAVATAR_AVATAR_ID: str = Field(
+        default="",
+        description="Avatar UUID (HeyGen / LiveAvatar dashboard).",
+    )
+    LIVEAVATAR_USE_SANDBOX: bool = Field(default=True)
+    LIVEAVATAR_SESSION_MODE: Literal["LITE", "FULL"] = Field(
+        default="FULL",
+        description="FULL sends avatar_persona (voice_id, language); needed for studio voice + speak_text over LiveKit.",
+    )
+    LIVEAVATAR_LANGUAGE: str = Field(default="en")
+    LIVEAVATAR_CONTEXT_ID: str = Field(
+        default="",
+        description="Optional context UUID for FULL mode avatar_persona.",
+    )
+    LIVEAVATAR_VOICE_ID: str = Field(
+        default="",
+        description="Optional voice UUID for FULL mode; empty uses avatar default.",
+    )
     GEMINI_TEACHER_MODEL: str = Field(
         default="gemini-2.5-pro",
         description="Higher-reasoning model for nightly policy synthesis (Phase D).",
+    )
+    GEMINI_TTS_MODEL: str = Field(
+        default="gemini-2.5-flash-preview-tts",
+        description="Gemini native TTS model for voice-only mock interview playback.",
+    )
+    GEMINI_TTS_VOICE: str = Field(
+        default="Kore",
+        description="Prebuilt Gemini TTS voice name (see speech generation docs).",
     )
 
     # CORS: comma-separated browser origins (e.g. Next.js dev on localhost vs 127.0.0.1)
@@ -118,6 +144,15 @@ class Settings(BaseSettings):
     INTERNAL_REALTIME_SECRET: str = Field(
         default="dev-internal-realtime-secret-change-in-production",
         description="Shared secret for POST /realtime/internal/push from the worker.",
+    )
+
+    # Optional: distributed rate limiting (shared across Gunicorn workers / replicas)
+    REDIS_URL: str | None = Field(
+        default=None,
+        description=(
+            "If set (e.g. redis://redis:6379/0), rate limits use Redis; "
+            "otherwise in-memory per process."
+        ),
     )
 
     # Storage (Phase 12): local dev vs S3-compatible production

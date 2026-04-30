@@ -26,6 +26,15 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    container_name: mf-redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
   backend:
     build:
       context: ./backend
@@ -36,8 +45,7 @@ services:
     env_file:
       - ./.env
     environment:
-      # Same default as frontend; maps to JWT via AUTH_SECRET alias (see backend config)
-      AUTH_SECRET: ${AUTH_SECRET:-change-me-in-production-min-32-chars}
+      SYSTEM_ACTOR_USER_ID: ${SYSTEM_ACTOR_USER_ID:-}
       POSTGRES_SERVER: database
       POSTGRES_PORT: "5432"
       POSTGRES_USER: postgres
@@ -45,10 +53,19 @@ services:
       POSTGRES_DB: master_foundation
       # One API replica × capped workers × (pool + overflow) must stay < Postgres max_connections
       WEB_CONCURRENCY: "2"
-      # Phase 16: Procrastinate worker (separate container/process) calls back into this API
+      # Phase 16: worker container hits this URL; must match worker INTERNAL_REALTIME_SECRET
       REALTIME_PUSH_BASE_URL: http://backend:8000
+      INTERNAL_REALTIME_SECRET: ${INTERNAL_REALTIME_SECRET:-dev-internal-realtime-secret-change-in-production}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+    command: >
+      sh -c "alembic upgrade head
+      && (procrastinate --app=app.core.worker.app healthchecks
+      || procrastinate --app=app.core.worker.app schema --apply)
+      && gunicorn -c gunicorn_conf.py app.main:app"
     depends_on:
       database:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     healthcheck:
       test:
@@ -63,25 +80,46 @@ services:
     volumes:
       - backend_uploads:/app/data/uploads
 
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: mf-worker
+    env_file:
+      - ./.env
+    environment:
+      SYSTEM_ACTOR_USER_ID: ${SYSTEM_ACTOR_USER_ID:-}
+      POSTGRES_SERVER: database
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: master_foundation
+      REALTIME_PUSH_BASE_URL: http://backend:8000
+      INTERNAL_REALTIME_SECRET: ${INTERNAL_REALTIME_SECRET:-dev-internal-realtime-secret-change-in-production}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    command: >
+      sh -c "(procrastinate --app=app.core.worker.app healthchecks
+      || procrastinate --app=app.core.worker.app schema --apply)
+      && procrastinate --app=app.core.worker.app worker"
+    depends_on:
+      database:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000/api/v1}
-        AUTH_SECRET: ${AUTH_SECRET:-change-me-in-production-min-32-chars}
+        NEXT_PUBLIC_SYSTEM_USER_ID: ${NEXT_PUBLIC_SYSTEM_USER_ID:-}
     container_name: mf-frontend
     ports:
       - "${FRONTEND_HOST_PORT:-3001}:3000"
     environment:
-      AUTH_SECRET: ${AUTH_SECRET:-change-me-in-production-min-32-chars}
-      AUTH_URL: ${AUTH_URL:-http://localhost:3001}
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000/api/v1}
-      # Server-side login from Next.js → FastAPI inside Compose network
-      INTERNAL_API_URL: http://backend:8000/api/v1
-      # Google OAuth
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      NEXT_PUBLIC_SYSTEM_USER_ID: ${NEXT_PUBLIC_SYSTEM_USER_ID:-}
     depends_on:
       backend:
         condition: service_healthy

@@ -25,6 +25,7 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 COPY pyproject.toml gunicorn_conf.py alembic.ini ./
 COPY app ./app
 COPY alembic ./alembic
+COPY create_admin.py ./
 
 RUN useradd -m -u 10001 mf-user \
     && chown -R mf-user:mf-user /app

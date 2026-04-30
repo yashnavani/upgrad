@@ -1,5 +1,6 @@
 # backend/app/main.py
-from contextlib import asynccontextmanager
+import asyncio
+from contextlib import asynccontextmanager, suppress
 
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
@@ -18,9 +19,11 @@ from app.middleware.error_handler import (
     validation_exception_handler,
 )
 from app.middleware.performance import PerformanceMiddleware
+from app.middleware.pipeline_context import PipelineContextMiddleware
+from app.middleware.rate_limit import RateLimitMiddleware, close_redis_rate_limiter
 from app.middleware.request_id import RequestIDMiddleware
 from app.middleware.security_headers import SecurityHeadersMiddleware
-from app.middleware.telemetry import TelemetryMiddleware
+from app.middleware.telemetry import TelemetryMiddleware, drain_pending_audit_tasks
 
 logger = get_logger(__name__)
 
@@ -29,22 +32,39 @@ logger = get_logger(__name__)
 async def lifespan(app: FastAPI):
     setup_logging()
     logger.info(f"Starting {settings.PROJECT_NAME} in {settings.ENVIRONMENT} mode")
-    
+
     from app.core.startup_checks import run_startup_checks
+
     run_startup_checks()
-    
-    await procrastinate_app.open_async()
+
+    if settings.ENVIRONMENT != "testing":
+        await procrastinate_app.open_async()
+    rt_listener_task: asyncio.Task[None] | None = None
+    if settings.ENVIRONMENT != "testing":
+        from app.services.realtime_pg_notify import run_pg_notify_listener
+
+        rt_listener_task = asyncio.create_task(run_pg_notify_listener())
     try:
         yield
     finally:
-        await procrastinate_app.close_async()
+        if rt_listener_task is not None:
+            rt_listener_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await rt_listener_task
+        await drain_pending_audit_tasks()
+        await close_redis_rate_limiter()
+        if settings.ENVIRONMENT != "testing":
+            await procrastinate_app.close_async()
         logger.info("Shutting down gracefully")
 
 
 def create_app() -> FastAPI:
     app = FastAPI(
         title=settings.PROJECT_NAME,
-        description="AI-Native Master Foundation API with cognitive routing, HITL decisions, and real-time updates",
+        description=(
+            "AI-Native Master Foundation API with cognitive routing, HITL decisions, "
+            "and real-time updates"
+        ),
         version="0.1.0",
         openapi_url=f"{settings.API_V1_STR}/openapi.json",
         docs_url=f"{settings.API_V1_STR}/docs",
@@ -53,10 +73,13 @@ def create_app() -> FastAPI:
         default_response_class=JSONResponse,
     )
 
-    # Add middleware (order matters - first added is outermost)
+    # First added = innermost (closest to routes). Pipeline reads request_id from outer stack.
+    app.add_middleware(PipelineContextMiddleware)
     app.add_middleware(SecurityHeadersMiddleware)
     app.add_middleware(PerformanceMiddleware, slow_request_threshold_ms=1000.0)
     app.add_middleware(RequestIDMiddleware)
+    # Rate limiting runs before telemetry so 429s are captured in the audit log
+    app.add_middleware(RateLimitMiddleware, requests_per_minute=120)
     app.add_middleware(TelemetryMiddleware)
 
     # Register exception handlers
@@ -83,8 +106,14 @@ def create_app() -> FastAPI:
         "allow_methods": ["*"],
         "allow_headers": ["*"],
     }
-    if settings.ENVIRONMENT == "development":
+    if settings.ENVIRONMENT in ("development", "staging"):
         _cors["allow_origin_regex"] = r"^http://(localhost|127\.0\.0\.1)(:\d+)?$"
+    _cors["expose_headers"] = [
+        "X-Request-ID",
+        "X-Process-Time",
+        "X-Pipeline-Root",
+        "X-Feature-Pipeline",
+    ]
     app.add_middleware(CORSMiddleware, **_cors)
 
     app.include_router(api_router, prefix=settings.API_V1_STR)

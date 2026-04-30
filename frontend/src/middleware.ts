@@ -1,26 +1,10 @@
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-import { auth } from "@/auth";
-
-export default auth((req) => {
-  const path = req.nextUrl.pathname;
-  const isLogin = path.startsWith("/login");
-  const isNextAuth = path.startsWith("/api/auth");
-
-  if (isNextAuth) {
-    return NextResponse.next();
-  }
-
-  if (!req.auth && !isLogin) {
-    return NextResponse.redirect(new URL("/login", req.nextUrl.origin));
-  }
-
-  if (req.auth && isLogin) {
-    return NextResponse.redirect(new URL("/", req.nextUrl.origin));
-  }
-
+export default function middleware(req: NextRequest) {
+  void req;
   return NextResponse.next();
-});
+}
 
 export const config = {
   matcher: [

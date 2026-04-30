@@ -77,8 +77,8 @@ export default function AuditLogsPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-8 duration-500 animate-in fade-in">
       <div>
-        <h1 className="text-fluid-h2 font-bold tracking-tight text-foreground">
-          Run logs
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">
+          Run Logs
         </h1>
         <p className="mt-1 text-muted-foreground">
           Request history, agent API calls, and access events from the audit
@@ -87,7 +87,7 @@ export default function AuditLogsPage() {
       </div>
 
       {error ? (
-        <Card className="border-border/60 bg-muted/20">
+        <Card className="border border-border bg-muted/20">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <ShieldAlert className="h-5 w-5 text-muted-foreground" />
@@ -98,8 +98,8 @@ export default function AuditLogsPage() {
         </Card>
       ) : null}
 
-      <Card className="glass-panel overflow-hidden border-border/50 shadow-sm">
-        <CardHeader className="border-b border-border/50 bg-muted/20">
+      <Card className="overflow-hidden border border-border shadow-sm">
+        <CardHeader className="border-b border-border bg-muted/40">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Activity className="h-5 w-5 text-primary" />
             Request log

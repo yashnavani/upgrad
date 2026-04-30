@@ -11,7 +11,7 @@ def _procrastinate_conninfo() -> str:
     )
 
 
-# Procrastinate CLI: `procrastinate --app=app.core.worker.app ...`
+# CLI: procrastinate --app=app.core.worker.app …  (module app.core.worker, attribute app)
 app = App(
     connector=PsycopgConnector(conninfo=_procrastinate_conninfo()),
     import_paths=["app.tasks.ai_tasks"],

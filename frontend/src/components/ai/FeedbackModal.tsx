@@ -73,7 +73,7 @@ export function FeedbackModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="glass-panel max-w-md border-border/50">
+      <DialogContent className="max-w-md border border-border bg-card">
         <DialogHeader>
           <div className="mb-2 flex items-center gap-2">
             <div className="rounded-lg bg-primary/10 p-2 text-primary">
@@ -100,7 +100,7 @@ export function FeedbackModal({
         ) : null}
 
         <div className="space-y-4 py-2">
-          <div className="rounded-lg border border-border/50 bg-muted/30 p-3">
+          <div className="rounded-lg border border-border bg-muted/30 p-3">
             <p className="mb-1 text-[10px] font-bold tracking-wide text-muted-foreground uppercase">
               Original intent
             </p>
@@ -117,7 +117,7 @@ export function FeedbackModal({
               placeholder="e.g. Never suggest deleting accounts tagged legacy without approval…"
               value={correction}
               onChange={(e) => setCorrection(e.target.value)}
-              className="h-32 border-border/50 bg-background/50"
+              className="h-32 border-border bg-background"
             />
           </div>
         </div>

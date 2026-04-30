@@ -133,18 +133,18 @@ export function AIChatbot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="glass-panel glass-panel--static fixed right-4 bottom-4 z-50 flex h-[600px] max-h-[80vh] w-full max-w-[400px] flex-col overflow-hidden rounded-2xl shadow-2xl sm:right-8 sm:bottom-8"
+            className="fixed right-4 bottom-4 z-50 flex h-[600px] max-h-[80vh] w-full max-w-[400px] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl sm:right-8 sm:bottom-8"
             role="dialog"
             aria-label="Agent assistant"
           >
-            <div className="flex items-center justify-between border-b border-white/10 bg-zinc-950 px-4 py-3 text-white">
+            <div className="flex items-center justify-between border-b border-sidebar-border bg-sidebar px-4 py-3 text-white">
               <div className="flex items-center gap-2">
                 <div className="rounded-lg bg-primary/20 p-1.5">
                   <BrainCircuit className="h-5 w-5 text-primary" />
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold">Workspace agent</h3>
-                  <p className="text-[10px] text-zinc-400">
+                  <p className="text-[10px] text-sidebar-foreground">
                     Tools + policies enabled
                   </p>
                 </div>
@@ -153,13 +153,13 @@ export function AIChatbot() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setAIOpen(false)}
-                className="text-zinc-400 hover:bg-zinc-800 hover:text-white"
+                className="text-sidebar-foreground hover:bg-white/10 hover:text-white"
               >
                 <X className="h-4 w-4" />
               </Button>
             </div>
 
-            <ScrollArea className="min-h-0 flex-1 bg-white/50 p-4 dark:bg-zinc-950/40">
+            <ScrollArea className="min-h-0 flex-1 bg-background p-4">
               <div ref={scrollAnchorRef} className="space-y-4 pr-2">
                 {messages.map((msg, idx) => (
                   <div
@@ -227,8 +227,8 @@ export function AIChatbot() {
                         className={cn(
                           "rounded-2xl px-4 py-2.5 text-sm",
                           msg.role === "user"
-                            ? "max-w-full rounded-br-sm bg-zinc-900 text-white shadow-sm"
-                            : "rounded-bl-sm border border-border bg-white text-foreground shadow-sm dark:bg-zinc-900 dark:text-zinc-50"
+                            ? "max-w-full rounded-br-sm bg-primary text-white shadow-sm"
+                            : "rounded-bl-sm border border-border bg-card text-foreground shadow-sm"
                         )}
                       >
                         {msg.content}
@@ -239,7 +239,7 @@ export function AIChatbot() {
 
                 {isLoading && (
                   <div className="flex justify-start">
-                    <div className="flex max-w-[85%] items-center gap-2 rounded-2xl rounded-bl-sm border border-border bg-white px-4 py-3 text-foreground shadow-sm dark:bg-zinc-900">
+                    <div className="flex max-w-[85%] items-center gap-2 rounded-2xl rounded-bl-sm border border-border bg-card px-4 py-3 text-foreground shadow-sm">
                       <Loader2 className="h-4 w-4 animate-spin text-primary" />
                       <span className="text-xs text-muted-foreground">
                         Running…
@@ -265,14 +265,14 @@ export function AIChatbot() {
             )}
 
             <form
-              onSubmit={handleSend}
-              className="flex items-center gap-2 border-t border-border bg-white p-3 dark:bg-zinc-950"
+              onSubmit={(e) => void handleSend(e)}
+              className="flex items-center gap-2 border-t border-border bg-card p-3"
             >
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask the agent to do something..."
-                className="flex-1 rounded-full border-transparent bg-muted/50 focus-visible:bg-white focus-visible:ring-primary dark:focus-visible:bg-zinc-900"
+                className="flex-1 rounded-full border-transparent bg-muted/50 focus-visible:bg-background focus-visible:ring-primary"
                 disabled={isLoading}
               />
               <Button

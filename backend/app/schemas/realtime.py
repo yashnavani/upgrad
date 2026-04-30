@@ -5,5 +5,5 @@ from pydantic import BaseModel, Field
 
 
 class RealtimeInternalPush(BaseModel):
-    user_id: str = Field(..., description="Target user UUID as string (JWT sub)")
+    user_id: str = Field(..., description="Target user UUID as string")
     message: dict[str, Any]

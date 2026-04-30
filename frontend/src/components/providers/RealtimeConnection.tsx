@@ -2,7 +2,7 @@
 
 import { useRealtime } from "@/hooks/useRealtime";
 
-/** Mount once under SessionProvider + NotificationFeedProvider. */
+/** Mount once under NotificationFeedProvider. */
 export function RealtimeConnection() {
   useRealtime();
   return null;

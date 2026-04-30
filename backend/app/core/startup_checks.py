@@ -16,12 +16,8 @@ def validate_environment() -> bool:
     """
     errors = []
 
-    if settings.ENVIRONMENT == "production":
-        if settings.JWT_SECRET == "change-me-in-production-min-32-chars":
-            errors.append("JWT_SECRET must be changed in production")
-        elif len(settings.JWT_SECRET) < 32:
-            errors.append("JWT_SECRET must be at least 32 characters")
-
+    if settings.ENVIRONMENT == "production" and not settings.SYSTEM_ACTOR_USER_ID:
+        errors.append("SYSTEM_ACTOR_USER_ID must be set in production")
     if not settings.POSTGRES_SERVER:
         errors.append("POSTGRES_SERVER is not configured")
 
@@ -36,6 +32,23 @@ def validate_environment() -> bool:
 
     if not settings.GEMINI_API_KEY:
         logger.warning("GEMINI_API_KEY is not configured - AI features will not work")
+
+    la_key = (settings.LIVEAVATAR_API_KEY or "").strip()
+    la_id = (settings.LIVEAVATAR_AVATAR_ID or "").strip()
+    if bool(la_key) ^ bool(la_id):
+        logger.warning(
+            "LiveAvatar: set both LIVEAVATAR_API_KEY and LIVEAVATAR_AVATAR_ID "
+            "(or leave both empty for text-only interviews)."
+        )
+
+    if settings.ENVIRONMENT in ("staging", "production") and not (
+        settings.REDIS_URL or ""
+    ).strip():
+        logger.warning(
+            "REDIS_URL is not set: rate limits are per-process only "
+            "(not shared across Gunicorn workers or replicas). "
+            "Set REDIS_URL for distributed limits."
+        )
 
     if settings.STORAGE_BACKEND == "s3":
         if not settings.S3_BUCKET_NAME:

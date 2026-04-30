@@ -1,12 +1,14 @@
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends
-from sqlalchemy import case, func, select
+from sqlalchemy import case, cast, func, select
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user, get_db
 from app.models.audit import AuditLog
 from app.models.decision import AgenticDecision
+from app.models.item import Item
 from app.models.policy import Policy
 from app.models.user import User
 from app.schemas.dashboard import ChartDay, DashboardMetrics, InsightItem
@@ -15,76 +17,14 @@ router = APIRouter()
 
 
 def _weekday_labels() -> list[datetime]:
-    today = datetime.now(UTC).date()
-    return [datetime.combine(today - timedelta(days=i), datetime.min.time(), tzinfo=UTC) for i in range(6, -1, -1)]
+    today = datetime.now(timezone.utc).date()
+    return [
+        datetime.combine(today - timedelta(days=i), datetime.min.time(), tzinfo=timezone.utc)
+        for i in range(6, -1, -1)
+    ]
 
 
-@router.get("/metrics", response_model=DashboardMetrics)
-async def dashboard_metrics(
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-) -> DashboardMetrics:
-    """Aggregates for overview + chart (chart requires superuser)."""
-    pa = await db.scalar(
-        select(func.count())
-        .select_from(Policy)
-        .where(Policy.is_deleted.is_(False), Policy.is_active.is_(True))
-    )
-    pt = await db.scalar(
-        select(func.count()).select_from(Policy).where(Policy.is_deleted.is_(False))
-    )
-
-    metrics = DashboardMetrics(
-        policies_active=int(pa or 0),
-        policies_total=int(pt or 0),
-    )
-
-    if not current_user.is_superuser:
-        return metrics
-
-    ut = await db.scalar(
-        select(func.count()).select_from(User).where(User.is_deleted.is_(False))
-    )
-    pd = await db.scalar(
-        select(func.count())
-        .select_from(AgenticDecision)
-        .where(
-            AgenticDecision.status == "pending",
-            AgenticDecision.is_deleted.is_(False),
-        )
-    )
-    since_24h = datetime.now(UTC) - timedelta(hours=24)
-    ae = await db.scalar(
-        select(func.count())
-        .select_from(AuditLog)
-        .where(AuditLog.is_deleted.is_(False), AuditLog.created_at >= since_24h)
-    )
-
-    metrics.users_total = int(ut or 0)
-    metrics.pending_decisions = int(pd or 0)
-    metrics.audit_events_24h = int(ae or 0)
-
-    since_7d = datetime.now(UTC) - timedelta(days=7)
-    day_trunc = func.date_trunc("day", AuditLog.created_at).label("day")
-    rows = (
-        (
-            await db.execute(
-                select(
-                    day_trunc,
-                    func.count().label("requests"),
-                    func.sum(
-                        case((AuditLog.endpoint.like("%/ai/chat%"), 1), else_=0)
-                    ).label("ai_calls"),
-                )
-                .where(AuditLog.is_deleted.is_(False), AuditLog.created_at >= since_7d)
-                .group_by(day_trunc)
-                .order_by(day_trunc)
-            )
-        )
-        .mappings()
-        .all()
-    )
-
+def _rows_to_chart_days(rows: list) -> list[ChartDay]:
     by_day: dict[str, tuple[int, int]] = {}
     for m in rows:
         d = m["day"]
@@ -107,8 +47,112 @@ async def dashboard_metrics(
                 ai_calls=a,
             )
         )
-    metrics.chart_days = chart
-    return metrics
+    return chart
+
+
+async def _audit_chart_rows(
+    db: AsyncSession, *, since_7d: datetime, actor_id: str | None
+) -> list:
+    day_trunc = func.date_trunc("day", AuditLog.created_at).label("day")
+    stmt = (
+        select(
+            day_trunc,
+            func.count().label("requests"),
+            func.sum(
+                case((AuditLog.endpoint.like("%/ai/chat%"), 1), else_=0)
+            ).label("ai_calls"),
+        )
+        .where(AuditLog.is_deleted.is_(False), AuditLog.created_at >= since_7d)
+    )
+    if actor_id is not None:
+        stmt = stmt.where(AuditLog.actor_id == actor_id)
+    result = await db.execute(stmt.group_by(day_trunc).order_by(day_trunc))
+    return result.mappings().all()
+
+
+@router.get("/metrics", response_model=DashboardMetrics)
+async def dashboard_metrics(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> DashboardMetrics:
+    """Aggregates for overview + chart. Superusers see org-wide totals; others see scoped metrics."""
+    pa = await db.scalar(
+        select(func.count())
+        .select_from(Policy)
+        .where(Policy.is_deleted.is_(False), Policy.is_active.is_(True))
+    )
+    pt = await db.scalar(
+        select(func.count()).select_from(Policy).where(Policy.is_deleted.is_(False))
+    )
+
+    since_24h = datetime.now(timezone.utc) - timedelta(hours=24)
+    since_7d = datetime.now(timezone.utc) - timedelta(days=7)
+
+    if not current_user.is_superuser:
+        aid = str(current_user.id)
+        ae = await db.scalar(
+            select(func.count())
+            .select_from(AuditLog)
+            .where(
+                AuditLog.is_deleted.is_(False),
+                AuditLog.created_at >= since_24h,
+                AuditLog.actor_id == aid,
+            )
+        )
+        rows = await _audit_chart_rows(db, since_7d=since_7d, actor_id=aid)
+        pd = await db.scalar(
+            select(func.count())
+            .select_from(AgenticDecision)
+            .where(
+                AgenticDecision.status == "pending",
+                AgenticDecision.is_deleted.is_(False),
+                cast(AgenticDecision.input_context, JSONB).contains({"requested_by_user_id": aid}),
+            )
+        )
+        io = await db.scalar(
+            select(func.count())
+            .select_from(Item)
+            .where(Item.is_deleted.is_(False), Item.owner_id == current_user.id)
+        )
+        return DashboardMetrics(
+            policies_active=int(pa or 0),
+            policies_total=int(pt or 0),
+            users_total=None,
+            pending_decisions=int(pd or 0),
+            audit_events_24h=int(ae or 0),
+            chart_days=_rows_to_chart_days(rows),
+            items_owned=int(io or 0),
+        )
+
+    ut = await db.scalar(
+        select(func.count()).select_from(User).where(User.is_deleted.is_(False))
+    )
+    pd = await db.scalar(
+        select(func.count())
+        .select_from(AgenticDecision)
+        .where(
+            AgenticDecision.status == "pending",
+            AgenticDecision.is_deleted.is_(False),
+        )
+    )
+    ae = await db.scalar(
+        select(func.count())
+        .select_from(AuditLog)
+        .where(AuditLog.is_deleted.is_(False), AuditLog.created_at >= since_24h)
+    )
+
+    rows = await _audit_chart_rows(db, since_7d=since_7d, actor_id=None)
+    chart = _rows_to_chart_days(rows)
+
+    return DashboardMetrics(
+        policies_active=int(pa or 0),
+        policies_total=int(pt or 0),
+        users_total=int(ut or 0),
+        pending_decisions=int(pd or 0),
+        audit_events_24h=int(ae or 0),
+        chart_days=chart,
+        items_owned=None,
+    )
 
 
 @router.get("/insights", response_model=list[InsightItem])
@@ -120,7 +164,7 @@ async def dashboard_insights(
     if not current_user.is_superuser:
         return []
 
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
     since_24h = now - timedelta(hours=24)
     insights: list[InsightItem] = []
 
@@ -141,7 +185,7 @@ async def dashboard_insights(
                 severity="WARNING",
                 confidence="100%",
                 timestamp=now.isoformat(),
-                description="Agent proposals are queued until a superuser approves or rejects them in Human approvals.",
+                description="Agent proposals are queued until a superuser approves or rejects them in Agent Insights → Decisions.",
             )
         )
 

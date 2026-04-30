@@ -60,7 +60,7 @@ function CustomTooltip({
   if (!active || !payload?.length) return null;
 
   return (
-    <div className="glass-panel rounded-xl border border-border/50 p-3 text-sm shadow-xl">
+    <div className="rounded-xl border border-border bg-card p-3 text-sm shadow-lg">
       <p className="mb-2 font-semibold text-foreground">{label}</p>
       {payload.map((entry, index) => (
         <div key={index} className="mt-1 flex items-center gap-2">
@@ -87,9 +87,15 @@ export type ActivityChartProps = {
   data?: Point[] | null;
   /** When true and `data` is empty, show empty state instead of demo data. */
   liveOnly?: boolean;
+  /** Copy for descriptions when using live audit data. */
+  scope?: "personal" | "organization";
 };
 
-export function ActivityChart({ data, liveOnly = false }: ActivityChartProps) {
+export function ActivityChart({
+  data,
+  liveOnly = false,
+  scope = "organization",
+}: ActivityChartProps) {
   const chartData = React.useMemo(() => {
     if (liveOnly) {
       return data && data.length > 0 ? data : [];
@@ -116,21 +122,23 @@ export function ActivityChart({ data, liveOnly = false }: ActivityChartProps) {
 
   if (liveOnly && chartData.length === 0) {
     return (
-      <Card className="glass-panel w-full">
+      <Card className="w-full border border-border shadow-sm">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Activity className="h-5 w-5 text-primary" />
-            Usage overview
+            Usage Overview
           </CardTitle>
           <CardDescription>
-            Audit-based chart is available to administrators. Generate API
-            traffic to see request and /ai/chat volume for the last 7 days.
+            {scope === "personal"
+              ? "No audit rows for your account in this window yet. Use the app (API calls while signed in) to populate telemetry."
+              : "No org-wide audit data in this window yet. Generate API traffic to see request and /ai/chat volume for the last 7 days."}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex h-[300px] items-center justify-center px-4 text-center text-sm text-muted-foreground">
-            No data in this window yet, or sign in as a superuser to load
-            telemetry from run logs.
+            {scope === "personal"
+              ? "Your activity chart will appear here once audit logs include your requests."
+              : "No telemetry in run logs for this period yet."}
           </div>
         </CardContent>
       </Card>
@@ -138,17 +146,19 @@ export function ActivityChart({ data, liveOnly = false }: ActivityChartProps) {
   }
 
   return (
-    <Card className="glass-panel w-full">
+    <Card className="w-full border border-border shadow-sm">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2 text-lg">
               <Activity className="h-5 w-5 text-primary" />
-              Usage overview
+              Usage Overview
             </CardTitle>
             <CardDescription>
               {liveOnly
-                ? "API requests and /ai/chat calls from audit logs (last 7 days)"
+                ? scope === "personal"
+                  ? "Your API requests and /ai/chat calls from audit logs (last 7 days)"
+                  : "Org-wide API requests and /ai/chat calls from audit logs (last 7 days)"
                 : "API requests and AI invocations (last 7 days)"}
             </CardDescription>
           </div>
@@ -163,8 +173,8 @@ export function ActivityChart({ data, liveOnly = false }: ActivityChartProps) {
             >
               <defs>
                 <linearGradient id={gradRequests} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#7c3aed" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#7c3aed" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#6c5ce7" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#6c5ce7" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id={gradAi} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#38bdf8" stopOpacity={0.3} />
@@ -200,21 +210,21 @@ export function ActivityChart({ data, liveOnly = false }: ActivityChartProps) {
                 type="monotone"
                 dataKey="requests"
                 name="requests"
-                stroke="#7c3aed"
-                strokeWidth={3}
+                stroke="#6c5ce7"
+                strokeWidth={2}
                 fillOpacity={1}
                 fill={`url(#${gradRequests})`}
-                activeDot={{ r: 6, strokeWidth: 0, fill: "#7c3aed" }}
+                activeDot={{ r: 5, strokeWidth: 0, fill: "#6c5ce7" }}
               />
               <Area
                 type="monotone"
                 dataKey="ai_calls"
                 name="ai_calls"
                 stroke="#38bdf8"
-                strokeWidth={3}
+                strokeWidth={2}
                 fillOpacity={1}
                 fill={`url(#${gradAi})`}
-                activeDot={{ r: 6, strokeWidth: 0, fill: "#38bdf8" }}
+                activeDot={{ r: 5, strokeWidth: 0, fill: "#38bdf8" }}
               />
             </AreaChart>
           </ResponsiveContainer>

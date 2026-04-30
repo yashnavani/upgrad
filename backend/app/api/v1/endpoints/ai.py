@@ -40,10 +40,7 @@ async def ai_chat_endpoint(
     try:
         agent = get_master_agent()
     except RuntimeError as e:
-        raise HTTPException(
-            status_code=503,
-            detail=str(e),
-        ) from e
+        raise HTTPException(status_code=503, detail=str(e)) from e
 
     try:
         past_lessons = await get_similar_past_lessons(db, request.message)

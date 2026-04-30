@@ -31,9 +31,19 @@ class PerformanceMiddleware(BaseHTTPMiddleware):
         response.headers["X-Process-Time"] = f"{process_time:.2f}ms"
 
         if process_time > self.slow_request_threshold_ms:
+            proot = getattr(request.state, "pipeline_root_id", None)
+            feat = getattr(request.state, "feature_pipeline", None)
+            rid = getattr(request.state, "request_id", None)
             logger.warning(
-                f"Slow request detected: {request.method} {request.url.path} "
-                f"took {process_time:.2f}ms (threshold: {self.slow_request_threshold_ms}ms)"
+                "Slow request: %s %s %.2fms (threshold %.0fms) "
+                "pipeline_root=%s feature_pipeline=%s request_id=%s",
+                request.method,
+                request.url.path,
+                process_time,
+                self.slow_request_threshold_ms,
+                proot or "-",
+                feat or "-",
+                rid or "-",
             )
 
         return response

@@ -9,8 +9,10 @@ logger = logging.getLogger(__name__)
 
 class ConnectionManager:
     """
-    In-memory map of user id -> active WebSocket connections.
-    The API process owns this; background workers reach it via HTTP internal push.
+    In-memory map of user id -> active WebSocket connections (per Gunicorn worker).
+
+    Cross-worker delivery: POST /realtime/internal/push uses Postgres NOTIFY so
+    every worker receives the payload; only the worker holding the socket sends.
     """
 
     def __init__(self) -> None:

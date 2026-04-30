@@ -1,17 +1,15 @@
 # backend/app/services/ai_agent.py
 import logging
 from dataclasses import dataclass
-from datetime import UTC
+from datetime import datetime, timezone
 from typing import Any
 
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent, RunContext
-from pydantic_ai.models.gemini import GeminiModel
-from pydantic_ai.providers.google_gla import GoogleGLAProvider
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.config import settings
+from app.core.gemini_clients import get_pydantic_gemini_flash_model
 from app.models.decision import AgenticDecision
 from app.models.user import User
 
@@ -37,26 +35,19 @@ class ActionProposal(BaseModel):
 
 
 def _create_master_agent() -> Agent:
-    key = (settings.GEMINI_API_KEY or "").strip()
-    if not key:
-        raise RuntimeError(
-            "GEMINI_API_KEY is not configured. Set it in .env to enable /ai/chat."
-        )
-    model = GeminiModel(
-        "gemini-2.5-flash",
-        provider=GoogleGLAProvider(api_key=key),
-    )
+    model = get_pydantic_gemini_flash_model()
     agent = Agent(
         model,
         deps_type=AgentDependencies,
         system_prompt=(
-                "You are the Luminous workspace copilot, an elite operational assistant. "
+            "You are the Luminous workspace copilot, an elite operational assistant. "
             "Your job is to assist the user by answering questions and executing tools. "
             "Be concise, professional, and highly accurate. "
             "If you do not know the answer, or lack the tool to perform a task, state so clearly. "
-            "For ANY action that modifies data, spends money, deletes records, or materially affects "
-            "users or security, you MUST use the propose_high_value_action tool instead of claiming "
-            "the action was done. Never pretend a high-impact action ran without human approval."
+            "For ANY action that modifies data, spends money, deletes records, or materially "
+            "affects users or security, you MUST use the propose_high_value_action tool instead "
+            "of claiming the action was done. Never pretend a high-impact action ran without "
+            "human approval."
         ),
     )
 
@@ -79,7 +70,7 @@ def _create_master_agent() -> Agent:
         """
         from datetime import datetime
 
-        current_time = datetime.now(UTC).isoformat()
+        current_time = datetime.now(timezone.utc).isoformat()
         logger.info("AI Tool Executed: get_system_time")
         return f"The current system time in UTC is {current_time}"
 

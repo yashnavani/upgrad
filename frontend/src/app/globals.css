@@ -4,7 +4,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Enterprise Glass SaaS — dark canvas, dot grid, indigo refraction, fluid type */
 @keyframes slide-in-right {
   0% {
     transform: translateX(100%);
@@ -22,10 +21,6 @@
   --font-mono: var(--font-mono-loaded), ui-monospace, SFMono-Regular, Menlo,
     Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --font-heading: var(--font-sans);
-
-  --text-fluid-h1: clamp(2.5rem, 5vw + 1rem, 4rem);
-  --text-fluid-h2: clamp(2rem, 4vw + 1rem, 3rem);
-  --text-fluid-h3: clamp(1.5rem, 3vw + 1rem, 2.25rem);
 
   --animate-slide-in-right: slide-in-right 0.3s ease-out both;
 
@@ -69,75 +64,75 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Light mode — Stitch Material Design 3 light scheme (Luminous) */
 :root {
-  --background: #f7f9fb;
-  --foreground: #191c1e;
+  --background: #f5f6fa;
+  --foreground: #1a1a2e;
   --card: #ffffff;
-  --card-foreground: #191c1e;
+  --card-foreground: #1a1a2e;
   --popover: #ffffff;
-  --popover-foreground: #191c1e;
-  --primary: #4648d4;
+  --popover-foreground: #1a1a2e;
+  --primary: #6c5ce7;
   --primary-foreground: #ffffff;
-  --secondary: #575992;
-  --secondary-foreground: #ffffff;
-  --muted: #e0e3e5;
-  --muted-foreground: #464554;
-  --accent: #6063ee;
-  --accent-foreground: #ffffff;
-  --destructive: #ba1a1a;
-  --border: rgba(199, 196, 215, 0.2);
-  --input: rgba(199, 196, 215, 0.2);
-  --ring: #4648d4;
-  --chart-1: #4648d4;
-  --chart-2: #575992;
-  --chart-3: #904900;
-  --chart-4: #767586;
-  --chart-5: #c7c4d7;
-  --radius: 0.75rem;
-  --sidebar: rgba(255, 255, 255, 0.8);
-  --sidebar-foreground: #191c1e;
-  --sidebar-primary: #4648d4;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #bdbefe;
-  --sidebar-accent-foreground: #494b83;
-  --sidebar-border: rgba(199, 196, 215, 0.2);
-  --sidebar-ring: #4648d4;
+  --secondary: #f0eeff;
+  --secondary-foreground: #6c5ce7;
+  --muted: #f0f1f5;
+  --muted-foreground: #6b7280;
+  --accent: #f0eeff;
+  --accent-foreground: #6c5ce7;
+  --destructive: #ef4444;
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #6c5ce7;
+  --chart-1: #6c5ce7;
+  --chart-2: #a78bfa;
+  --chart-3: #34d399;
+  --chart-4: #fbbf24;
+  --chart-5: #f472b6;
+  --radius: 0.625rem;
+
+  --sidebar: #1a1a2e;
+  --sidebar-foreground: #a0a3bd;
+  --sidebar-primary: #ffffff;
+  --sidebar-primary-foreground: #1a1a2e;
+  --sidebar-accent: rgba(108, 92, 231, 0.15);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: #6c5ce7;
 }
 
 .dark {
-  /* Stitch Material Design 3 dark scheme (from settings-profile.html) */
-  --background: #0b1326;
-  --foreground: #dae2fd;
-  --card: #171f33;
-  --card-foreground: #dae2fd;
-  --popover: #171f33;
-  --popover-foreground: #dae2fd;
-  --primary: #c0c1ff;
-  --primary-foreground: #07006c;
-  --secondary: #c0c1ff;
-  --secondary-foreground: #292a60;
-  --muted: #2d3449;
-  --muted-foreground: #c7c4d7;
-  --accent: #8083ff;
-  --accent-foreground: #0d0096;
-  --destructive: #ffb4ab;
-  --border: rgba(144, 143, 160, 0.1);
-  --input: rgba(144, 143, 160, 0.1);
-  --ring: #c0c1ff;
-  --chart-1: #c0c1ff;
-  --chart-2: #c7c4d7;
-  --chart-3: #908fa0;
-  --chart-4: #464554;
-  --chart-5: #283044;
-  --sidebar: rgba(11, 19, 38, 0.8);
-  --sidebar-foreground: #dae2fd;
-  --sidebar-primary: #c0c1ff;
-  --sidebar-primary-foreground: #07006c;
-  --sidebar-accent: #8083ff;
-  --sidebar-accent-foreground: #0d0096;
-  --sidebar-border: rgba(218, 226, 253, 0.1);
-  --sidebar-ring: #c0c1ff;
+  --background: #0f0f1a;
+  --foreground: #e2e4f0;
+  --card: #1a1a2e;
+  --card-foreground: #e2e4f0;
+  --popover: #1a1a2e;
+  --popover-foreground: #e2e4f0;
+  --primary: #8b7cf7;
+  --primary-foreground: #ffffff;
+  --secondary: #252540;
+  --secondary-foreground: #a78bfa;
+  --muted: #252540;
+  --muted-foreground: #9ca3af;
+  --accent: #252540;
+  --accent-foreground: #a78bfa;
+  --destructive: #f87171;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.08);
+  --ring: #8b7cf7;
+  --chart-1: #8b7cf7;
+  --chart-2: #c4b5fd;
+  --chart-3: #34d399;
+  --chart-4: #fbbf24;
+  --chart-5: #f472b6;
+
+  --sidebar: #0f0f1a;
+  --sidebar-foreground: #8b8fa8;
+  --sidebar-primary: #e2e4f0;
+  --sidebar-primary-foreground: #0f0f1a;
+  --sidebar-accent: rgba(139, 124, 247, 0.15);
+  --sidebar-accent-foreground: #e2e4f0;
+  --sidebar-border: rgba(255, 255, 255, 0.06);
+  --sidebar-ring: #8b7cf7;
 }
 
 @layer base {
@@ -155,41 +150,6 @@
 }
 
 @layer utilities {
-  /* Stitch glass-panel: light mode = white/40%, dark mode = navy/60% */
-  .glass-panel {
-    background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(199, 196, 215, 0.1);
-    box-shadow:
-      0px 4px 12px rgba(25, 28, 30, 0.04),
-      0px 16px 48px rgba(25, 28, 30, 0.08);
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  }
-
-  .dark .glass-panel {
-    background: rgba(11, 19, 38, 0.6);
-    border: 1px solid rgba(144, 143, 160, 0.1);
-    box-shadow:
-      0 4px 40px -12px rgba(0, 0, 0, 0.6),
-      inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  }
-
-  .glass-panel:hover:not(.glass-panel--static) {
-    border-color: rgba(70, 72, 212, 0.25);
-    box-shadow:
-      0px 8px 24px rgba(25, 28, 30, 0.08),
-      0px 24px 64px rgba(25, 28, 30, 0.12);
-    transform: translateY(-2px);
-  }
-
-  .dark .glass-panel:hover:not(.glass-panel--static) {
-    border-color: rgba(192, 193, 255, 0.25);
-    box-shadow:
-      0 16px 48px -12px rgba(0, 0, 0, 0.5),
-      inset 0 1px 0 rgba(255, 255, 255, 0.08),
-      0 0 0 1px rgba(192, 193, 255, 0.15);
-  }
-
   .hide-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -198,52 +158,6 @@
     display: none;
   }
 
-  /* Stitch ambient background: light = subtle indigo/orange, dark = stronger blobs */
-  .ambient-bg {
-    position: relative;
-    z-index: 0;
-  }
-  .ambient-bg::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    right: 0;
-    z-index: -10;
-    width: 800px;
-    height: 800px;
-    margin-right: -384px;
-    margin-top: -384px;
-    pointer-events: none;
-    background: radial-gradient(circle, rgba(70, 72, 212, 0.08) 0%, transparent 60%);
-    filter: blur(120px);
-  }
-  .ambient-bg::after {
-    content: "";
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    z-index: -10;
-    width: 600px;
-    height: 600px;
-    margin-left: -256px;
-    margin-bottom: -256px;
-    pointer-events: none;
-    background: radial-gradient(circle, rgba(144, 73, 0, 0.06) 0%, transparent 60%);
-    filter: blur(100px);
-  }
-
-  .dark .ambient-bg::before {
-    background: radial-gradient(circle, rgba(192, 193, 255, 0.05) 0%, transparent 60%);
-  }
-  .dark .ambient-bg::after {
-    background: radial-gradient(circle, rgba(255, 183, 131, 0.05) 0%, transparent 60%);
-  }
-
-  .enterprise-canvas {
-    isolation: isolate;
-  }
-
-  /* Main column: let body background show through */
   .workspace-canvas {
     position: relative;
   }

@@ -1,5 +1,8 @@
 .env
 
+# Local codegen / scratch digests (large)
+digest.txt
+
 # MCP config may contain API keys — keep local only
 .cursor/mcp.json
 

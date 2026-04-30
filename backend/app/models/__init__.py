@@ -4,6 +4,7 @@ from app.models.audit import AuditLog
 from app.models.base import Base
 from app.models.decision import AgenticDecision
 from app.models.file_asset import FileAsset
+from app.models.interview import InterviewSession
 from app.models.item import Item
 from app.models.policy import Policy
 from app.models.settings import SystemSetting
@@ -18,4 +19,5 @@ __all__ = [
     "Policy",
     "SystemSetting",
     "Item",
+    "InterviewSession",
 ]

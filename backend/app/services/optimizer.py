@@ -5,16 +5,16 @@ import asyncio
 import json
 import logging
 import re
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 from uuid import UUID
 
-from google import genai
 from google.genai import types
 from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
+from app.core.gemini_clients import get_google_genai_sdk_client
 from app.models.decision import AgenticDecision
 from app.models.policy import Policy
 from app.models.user import User
@@ -26,15 +26,6 @@ _OPTIMIZER_NAME_PREFIX = "AI Suggestion:"
 _MIN_LESSONS = 3
 _LESSON_FETCH_LIMIT = 20
 _DEDUP_HOURS = 24
-
-_genai_client: genai.Client | None = None
-
-
-def _client() -> genai.Client:
-    global _genai_client
-    if _genai_client is None:
-        _genai_client = genai.Client(api_key=settings.GEMINI_API_KEY)
-    return _genai_client
 
 
 def _extract_json_object(text: str) -> dict[str, Any]:
@@ -50,12 +41,15 @@ def _extract_json_object(text: str) -> dict[str, Any]:
 
 
 def _teacher_generate_sync(prompt: str) -> str:
+    client = get_google_genai_sdk_client()
+    if client is None:
+        raise RuntimeError("GEMINI_API_KEY is not configured")
     cfg = types.GenerateContentConfig(
         temperature=0.3,
         max_output_tokens=2048,
         response_mime_type="application/json",
     )
-    resp = _client().models.generate_content(
+    resp = client.models.generate_content(
         model=settings.GEMINI_TEACHER_MODEL,
         contents=prompt,
         config=cfg,
@@ -85,7 +79,7 @@ async def _notify_superusers(db: AsyncSession, title: str, message: str) -> None
 
 
 async def _recent_draft_exists(db: AsyncSession) -> bool:
-    since = datetime.now(UTC) - timedelta(hours=_DEDUP_HOURS)
+    since = datetime.now(timezone.utc) - timedelta(hours=_DEDUP_HOURS)
     q = await db.execute(
         select(func.count())
         .select_from(Policy)
@@ -140,7 +134,7 @@ async def run_self_optimization(db: AsyncSession) -> str:
         return "Not enough data to optimize yet."
 
     data_summary = "\n".join(
-        f"- User correction: {(l.feedback_notes or '').strip()}" for l in lessons
+        f"- User correction: {(lesson.feedback_notes or '').strip()}" for lesson in lessons
     )
 
     prompt = f"""You are the Teacher module of a Master Foundation agent.
@@ -149,7 +143,8 @@ Below are recent human corrections to the AI's behavior (newest first):
 {data_summary}
 
 TASK:
-1. Identify the single most important recurring pattern (if any). If corrections are unrelated, pick the theme that best unifies them.
+1. Identify the single most important recurring pattern (if any). If corrections are
+   unrelated, pick the theme that best unifies them.
 2. Draft one system-wide policy in plain English that would reduce these mistakes.
 3. Give a short policy name and a one-sentence description of why it is needed.
 
